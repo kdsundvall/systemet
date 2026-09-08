@@ -42,23 +42,36 @@ nav button:focus-visible{outline:2px solid var(--pine);outline-offset:-2px}
 .golv-note{margin-top:8px;font-size:13.5px;color:#B9C4C2;line-height:1.4}
 
 .block{margin-top:26px}
+#tab-idag{counter-reset:blk}
+#tab-idag .block{counter-increment:blk;background:#fff;border:1px solid var(--line);border-radius:3px;
+  padding:0 15px 14px;margin-top:22px}
+#tab-idag .block[data-open="false"]{padding-bottom:0;background:#F5F7F7}
 .blk-h{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:7px;
   border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11px;
   letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+button.blk-h{width:100%;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer;
+  text-align:left;padding:15px 0 11px;align-items:center}
+button.blk-h:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+#tab-idag .block[data-open="false"] button.blk-h{border-bottom-color:transparent}
+.blk-h .t{font-family:"Familjen Grotesk",sans-serif;font-size:20.5px;font-weight:600;letter-spacing:-.025em;
+  text-transform:none;color:var(--ink);line-height:1.05}
+#tab-idag .blk-h .t:before{content:counter(blk,decimal-leading-zero);font-family:"IBM Plex Mono",monospace;
+  font-size:11px;font-weight:400;letter-spacing:.1em;color:var(--muted);margin-right:10px;vertical-align:3px}
+.blk-h .meta{display:flex;align-items:center;gap:11px;flex:none}
 .blk-h .note{letter-spacing:.04em;text-transform:none;font-size:11px}
 .blurb{font-size:13.5px;color:var(--muted);margin:9px 0 2px;line-height:1.45}
 
 .fold-h{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:11px 0 8px;
   cursor:pointer;text-align:left;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
   font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.fold-h .pm{flex:none;width:19px;height:19px;border:1px solid var(--line);border-radius:2px;position:relative;background:#fff}
-.fold-h .pm:before,.fold-h .pm:after{content:"";position:absolute;background:var(--muted);left:50%;top:50%;
+.pm{flex:none;width:19px;height:19px;border:1px solid var(--line);border-radius:2px;position:relative;background:#fff}
+.pm:before,.pm:after{content:"";position:absolute;background:var(--muted);left:50%;top:50%;
   transform:translate(-50%,-50%)}
-.fold-h .pm:before{width:9px;height:1.5px}
-.fold-h .pm:after{width:1.5px;height:9px;transition:opacity .15s ease}
-.fold-h[aria-expanded="true"] .pm:after{opacity:0}
+.pm:before{width:9px;height:1.5px}
+.pm:after{width:1.5px;height:9px;transition:opacity .15s ease}
+[aria-expanded="true"] .pm:after{opacity:0}
 .fold-h .spc{flex:1}
-.fold-h .cnt{letter-spacing:.04em;text-transform:none}
+.cnt{letter-spacing:.04em;text-transform:none;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
 .fold-h:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
 
 .item{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line);
@@ -82,10 +95,6 @@ nav button:focus-visible{outline:2px solid var(--pine);outline-offset:-2px}
   padding:6px 0;font-size:16px}
 .upg-top input:focus{border-bottom-color:var(--ink)}
 .upg.on .upg-top input{color:var(--muted);text-decoration:line-through}
-.upg-tid{display:flex;gap:8px;align-items:center;margin:9px 0 0 34px}
-.upg-tid span{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;
-  text-transform:uppercase;color:var(--muted)}
-.upg-tid input{width:56px;flex:none;padding:5px 7px;font-family:"IBM Plex Mono",monospace;font-size:13px;text-align:center}
 
 .step{display:flex;align-items:center;gap:8px;flex:none}
 .step button{width:32px;height:32px;border:1px solid var(--line);background:#fff;border-radius:2px;
@@ -123,9 +132,6 @@ table.wk td.idag{background:rgba(47,90,76,.07)}
 .dot{display:inline-block;width:11px;height:11px;border-radius:50%;border:1.5px solid #B4BDBE}
 .dot.fill{background:var(--pine);border-color:var(--pine)}
 .chain-key{font-size:12.5px;color:var(--muted);margin-top:11px;line-height:1.5}
-.mult{background:#fff;border:1px solid var(--line);border-radius:2px;padding:14px;margin-top:12px}
-.mult .n{font-family:"IBM Plex Mono",monospace;font-size:26px;letter-spacing:-.02em}
-.mult .t{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.45}
 
 .q{margin-top:20px}
 .q-n{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
@@ -168,24 +174,23 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
 <div id="tab-idag">
 
   <div class="golv" id="golvBox">
-    <div class="golv-lbl"><span>Golvet</span><span>det jag står för</span></div>
+    <div class="golv-lbl"><span>Vanor</span><span>det jag står för</span></div>
     <div class="item" data-k="fotter" tabindex="0" role="checkbox" aria-checked="false">
       <span class="box"></span><label>Fötterna i golvet när alarmet ringer</label></div>
     <div class="item" data-k="toa" tabindex="0" role="checkbox" aria-checked="false">
       <span class="box"></span><label>Toa-rutin</label></div>
-    <div class="item" data-k="ikbt" tabindex="0" role="checkbox" aria-checked="false">
-      <span class="box"></span><label>Öppnade en IKBT-modul</label></div>
+    <div class="item" data-k="neigong" tabindex="0" role="checkbox" aria-checked="false">
+      <span class="box"></span><label>Neigong, minst 2 min</label></div>
     <div class="golv-status" id="golvStatus">Tre handlingar. Sen är dagen godkänd.</div>
     <div class="golv-note hidden" id="golvNote"></div>
   </div>
 
-  <div class="block">
-    <div class="blk-h"><span>Morgon</span><span class="note">efter golvet</span></div>
-    <button class="fold-h" data-fold="morgon" aria-expanded="true">
-      <span class="pm"></span><span class="spc">Bonus</span><span class="cnt" id="cntMorgon"></span></button>
-    <div data-fold-body="morgon">
-      <div class="item" data-k="neigong" tabindex="0" role="checkbox" aria-checked="false">
-        <span class="box"></span><label>Neigong 10 min</label></div>
+  <div class="block" data-blk="bMorgon">
+    <button class="blk-h" data-fold="bMorgon" aria-expanded="true">
+      <span class="t">Morgon</span>
+      <span class="meta"><span class="note">bonus · efter vanorna</span>
+        <span class="cnt" id="cntMorgon"></span><span class="pm"></span></span></button>
+    <div data-fold-body="bMorgon">
       <div class="item" data-k="andning" tabindex="0" role="checkbox" aria-checked="false">
         <span class="box"></span><label>Andning, solar plexus</label>
         <span class="step" onclick="event.stopPropagation()">
@@ -200,59 +205,72 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
     </div>
   </div>
 
-  <div class="block">
-    <div class="blk-h"><span>Arbete</span><span class="note">6 h</span></div>
-    <div class="item" data-k="malskrivna" tabindex="0" role="checkbox" aria-checked="false">
-      <span class="box"></span><label>Skrev de elva målen för hand</label></div>
-    <div class="blurb">Tre uppgifter för idag. Beräknad tid är gissningen, faktisk tid är facit — skillnaden är det som lär dig planera.</div>
-    <div id="uppgLista"></div>
-    <button class="fold-h" data-fold="kurser" aria-expanded="true" style="margin-top:14px">
-      <span class="pm"></span><span class="spc">Kurser · bonus</span><span class="cnt" id="cntKurser"></span></button>
-    <div data-fold-body="kurser">
-      <div class="item" data-k="video" tabindex="0" role="checkbox" aria-checked="false">
-        <span class="box"></span><label>Startade en video <span class="cap">Sordell</span></label></div>
-      <div class="item" data-k="artikel" tabindex="0" role="checkbox" aria-checked="false">
-        <span class="box"></span><label>Öppnade en artikel <span class="cap">Beyond Duality</span></label></div>
+  <div class="block" data-blk="bArbete">
+    <button class="blk-h" data-fold="bArbete" aria-expanded="true">
+      <span class="t">Arbete</span>
+      <span class="meta"><span class="note">6 h</span>
+        <span class="cnt" id="cntArbete"></span><span class="pm"></span></span></button>
+    <div data-fold-body="bArbete">
+      <div class="item" data-k="malskrivna" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="box"></span><label>Skrev de elva målen för hand</label></div>
+      <div class="blurb">Tre uppgifter för idag.</div>
+      <div id="uppgLista"></div>
+      <button class="fold-h" data-fold="kurser" aria-expanded="true" style="margin-top:14px">
+        <span class="pm"></span><span class="spc">Kurser &amp; IKBT · bonus</span><span class="cnt" id="cntKurser"></span></button>
+      <div data-fold-body="kurser">
+        <div class="item" data-k="video" tabindex="0" role="checkbox" aria-checked="false">
+          <span class="box"></span><label>Startade en video <span class="cap">Sordell</span></label></div>
+        <div class="item" data-k="artikel" tabindex="0" role="checkbox" aria-checked="false">
+          <span class="box"></span><label>Öppnade en artikel <span class="cap">Beyond Duality</span></label></div>
+        <div class="item" data-k="ikbt" tabindex="0" role="checkbox" aria-checked="false">
+          <span class="box"></span><label>Öppnade en IKBT-modul</label></div>
+        <div class="obs"><div class="obs-l">IKBT · vilken modul</div>
+          <input type="text" id="ikbtVad" placeholder="modul, och hur långt du kom"></div>
+      </div>
     </div>
   </div>
 
-  <div class="block">
-    <div class="blk-h"><span>Struktur</span><span class="note">1,5 h</span></div>
-    <div class="item" data-k="struktur" tabindex="0" role="checkbox" aria-checked="false">
-      <span class="box"></span><label>Struktur-blocket</label></div>
+  <div class="block" data-blk="bStruktur">
+    <button class="blk-h" data-fold="bStruktur" aria-expanded="true">
+      <span class="t">Struktur</span>
+      <span class="meta"><span class="note">1,5 h</span>
+        <span class="cnt" id="cntStruktur"></span><span class="pm"></span></span></button>
+    <div data-fold-body="bStruktur">
+      <div class="item" data-k="struktur" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="box"></span><label>Struktur-blocket</label></div>
 
-    <div class="obs">
-      <div class="obs-l">IKBT · vilken modul</div>
-      <input type="text" id="ikbtVad" placeholder="modul, och hur långt du kom">
-    </div>
+      <div class="blurb" style="margin-top:16px">Skriv vad som hände. Blev det något annat än du tänkt — vad blev det, och varför blev det så. Ingen dom här; ändringarna görs i Översyn.</div>
+      <div class="obs"><div class="obs-l">Igår kväll</div>
+        <textarea id="obsKvall" placeholder="Vad kvällen faktiskt blev."></textarea></div>
+      <div class="obs"><div class="obs-l">Morgonen</div>
+        <textarea id="obsMorgon" placeholder="Vanorna, och vad som hände runt dem."></textarea></div>
+      <div class="obs"><div class="obs-l">Arbetsdagen</div>
+        <textarea id="obsArbete" placeholder="De tre uppgifterna. Om inte — vad du gjorde istället."></textarea></div>
 
-    <div class="blurb" style="margin-top:16px">Skriv vad som hände. Blev det något annat än du tänkt — vad blev det, och varför blev det så. Ingen dom här; ändringarna görs i Översyn.</div>
-    <div class="obs"><div class="obs-l">Igår kväll</div>
-      <textarea id="obsKvall" placeholder="Vad kvällen faktiskt blev."></textarea></div>
-    <div class="obs"><div class="obs-l">Morgonen</div>
-      <textarea id="obsMorgon" placeholder="Golvet, och vad som hände runt det."></textarea></div>
-    <div class="obs"><div class="obs-l">Arbetsdagen</div>
-      <textarea id="obsArbete" placeholder="De tre uppgifterna. Om inte — vad du gjorde istället."></textarea></div>
-
-    <button class="fold-h" data-fold="fakta" aria-expanded="true" style="margin-top:18px">
-      <span class="pm"></span><span class="spc">Igår kväll · tre fakta</span><span class="cnt" id="cntFakta"></span></button>
-    <div data-fold-body="fakta">
-      <div class="blurb">Sparas på gårdagens datum, så kedjan i Vecka blir rätt.</div>
-      <div class="field"><span class="lbl">Till sängs</span><input type="time" id="sang"></div>
-      <div class="field"><span class="lbl">Skärm sist</span><span class="pair">
-        <button type="button" id="skarmJa" aria-pressed="false">Ja</button>
-        <button type="button" id="skarmNej" aria-pressed="false">Nej</button></span></div>
-      <div class="field"><span class="lbl">Ett ord</span>
-        <input type="text" id="ord" maxlength="24" placeholder="tillståndet, ett ord"></div>
+      <button class="fold-h" data-fold="fakta" aria-expanded="true" style="margin-top:18px">
+        <span class="pm"></span><span class="spc">Igår kväll · tre fakta</span><span class="cnt" id="cntFakta"></span></button>
+      <div data-fold-body="fakta">
+        <div class="blurb">Sparas på gårdagens datum, så kedjan i Vecka blir rätt.</div>
+        <div class="field"><span class="lbl">Till sängs</span><input type="time" id="sang"></div>
+        <div class="field"><span class="lbl">Skärm sist</span><span class="pair">
+          <button type="button" id="skarmJa" aria-pressed="false">Ja</button>
+          <button type="button" id="skarmNej" aria-pressed="false">Nej</button></span></div>
+        <div class="field"><span class="lbl">Ett ord</span>
+          <input type="text" id="ord" maxlength="24" placeholder="tillståndet, ett ord"></div>
+      </div>
     </div>
   </div>
 
-  <div class="block">
-    <div class="blk-h"><span>Lek</span><span class="note">1,5 h · vänner, skoj, träning</span></div>
-    <div class="item" data-k="lek" tabindex="0" role="checkbox" aria-checked="false">
-      <span class="box"></span><label>Lek-blocket</label></div>
-    <div class="obs"><div class="obs-l">Vad jag gjorde</div>
-      <textarea id="lekVad" placeholder="Vad det blev, och med vem."></textarea></div>
+  <div class="block" data-blk="bLek">
+    <button class="blk-h" data-fold="bLek" aria-expanded="true">
+      <span class="t">Lek</span>
+      <span class="meta"><span class="note">1,5 h · vänner, skoj, träning</span><span class="pm"></span></span></button>
+    <div data-fold-body="bLek">
+      <div class="item" data-k="lek" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="box"></span><label>Lek-blocket</label></div>
+      <div class="obs"><div class="obs-l">Vad jag gjorde</div>
+        <textarea id="lekVad" placeholder="Vad det blev, och med vem."></textarea></div>
+    </div>
   </div>
 </div>
 
@@ -264,11 +282,6 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
     <div class="chain-key">Fylld prick = gjort. Tom = inte gjort. Bonus får ingen färg — bonus har ingen ställning att förlora.</div>
   </div>
   <div class="block">
-    <div class="blk-h"><span>Din multiplikator</span><span class="note">faktisk ÷ beräknad</span></div>
-    <div class="mult"><div class="n" id="multN">—</div>
-      <div class="t" id="multT">Fyll i beräknad och faktisk tid på uppgifterna. Efter ett par veckor vet du hur mycket du behöver lägga på dina gissningar när vi bokar in saker i kalendern.</div></div>
-  </div>
-  <div class="block">
     <div class="blk-h"><span>Bonus</span><span class="note">för mönstrets skull</span></div>
     <div class="chain"><table class="wk" id="kedja2"></table></div>
   </div>
@@ -276,21 +289,21 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
 
 <div id="tab-oversyn" class="hidden">
   <div class="block" style="margin-top:22px">
-    <div class="blk-h"><span>Översyn av golvet</span><span class="note" id="nastaText">—</span></div>
-    <div class="blurb">Var fjortonde dag. Den enda platsen där golvet ändras — inte i stunden, inte en trög morgon.</div>
+    <div class="blk-h"><span>Översyn av vanorna</span><span class="note" id="nastaText">—</span></div>
+    <div class="blurb">Var fjortonde dag. Den enda platsen där vanorna ändras — inte i stunden, inte en trög morgon.</div>
     <div class="q"><div class="q-n">01</div>
-      <div class="q-t">Har golvet gjorts utan att du behövt bestämma dig?</div>
+      <div class="q-t">Har vanorna gjorts utan att du behövt bestämma dig?</div>
       <textarea id="o1" placeholder="Signalen att utöka är inte antal dagar. Den är att du märker att du redan gjort det."></textarea></div>
     <div class="q"><div class="q-n">02</div>
-      <div class="q-t">Vad säger observationerna om golvet?</div>
+      <div class="q-t">Vad säger observationerna om vanorna?</div>
       <textarea id="o2" placeholder="Läs de senaste två veckorna. Leta mönster, inte enskilda dagar."></textarea></div>
     <div class="q"><div class="q-n">03</div>
       <div class="q-t">Höja, lägga till, eller släppa något?</div>
-      <textarea id="o3" placeholder="Ett nytt golv i taget. Under två minuter. Stapla på ett befintligt ankare."></textarea></div>
+      <textarea id="o3" placeholder="En ny vana i taget. Under två minuter. Stapla på ett befintligt ankare."></textarea></div>
     <div class="q"><div class="q-n">04</div>
-      <div class="q-t">Golvet som gäller de kommande två veckorna</div>
+      <div class="q-t">Vanorna som gäller de kommande två veckorna</div>
       <textarea id="o4" placeholder="Skriv det helt, som det ska stå."></textarea></div>
-    <div class="princip"><b>Missen är information om en designbrist, inte en dom över dig.</b> Snoozet visade sig vara ett saknat golv. Leta efter samma sak här.</div>
+    <div class="princip"><b>Missen är information om en designbrist, inte en dom över dig.</b> Snoozet visade sig vara en vana utan definierad minsta handling. Leta efter samma sak här.</div>
     <div class="field" style="margin-top:16px"><span class="lbl">Nästa översyn</span><input type="date" id="nastaDatum"></div>
     <button class="btn" id="sparaOversyn" style="margin-top:14px">Spara översyn</button>
     <div class="saved" id="oSaved"></div>
@@ -300,7 +313,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
 <div id="tab-sys" class="hidden">
   <div class="block" style="margin-top:22px">
     <div class="blk-h"><span>Principerna</span></div>
-    <div class="princip"><b>Två kategorier, aldrig tre.</b> Allt är antingen ett golv med en definierad minsta handling, eller äkta bonus. Så fort något känns som ett krav utan att ha ett golv — ge det ett golv eller släpp det.</div>
+    <div class="princip"><b>Två kategorier, aldrig tre.</b> Allt är antingen en vana med en definierad minsta handling, eller äkta bonus. Så fort något känns som ett krav utan att ha en minsta handling — ge det en, eller släpp det.</div>
     <div class="princip"><b>Blocken är form, inte mål.</b> Du kan inte misslyckas med en form. Du kan bara hamna utanför den och gå tillbaka in nästa dag.</div>
     <div class="princip"><b>Observera dagligen, ändra varannan vecka.</b> En dag är brus. Mönster syns först över tid.</div>
     <div class="princip"><b>Missa aldrig två gånger.</b> En dag är data. Två i rad är en riktning.</div>
@@ -331,7 +344,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
   </div>
 </div>
 
-<footer>Golv · bonus · inget däremellan</footer>
+<footer>Vanor · bonus · inget däremellan</footer>
 </div>
 
 <script>
@@ -367,32 +380,30 @@ const IGAR=nk(igarD);
 const VD=['sön','mån','tis','ons','tor','fre','lör'];
 const MN=['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
 
-const TOM={fotter:false,toa:false,ikbt:false,ikbtVad:'',neigong:false,andning:false,andMin:null,
+const TOM={fotter:false,toa:false,neigong:false,ikbt:false,ikbtVad:'',andning:false,andMin:null,
   promenad:false,frukost:false,malskrivna:false,
-  uppg:[{t:'',k:false,ber:'',fakt:''},{t:'',k:false,ber:'',fakt:''},{t:'',k:false,ber:'',fakt:''}],
+  uppg:[{t:'',k:false},{t:'',k:false},{t:'',k:false}],
   video:false,artikel:false,struktur:false,lek:false,lekVad:'',
   obsKvall:'',obsMorgon:'',obsArbete:'',sang:'',skarm:null,ord:''};
 const kopia=o=>JSON.parse(JSON.stringify(o));
 let dag=kopia(TOM),igar=kopia(TOM);
 let sys={start:'2026-08-23',mal:new Array(11).fill(''),oversyn:{o1:'',o2:'',o3:'',o4:''},nasta:'',
-  fold:{morgon:true,kurser:true,fakta:true}};
+  fold:{bMorgon:true,bArbete:true,bStruktur:true,bLek:true,kurser:true,fakta:true}};
 let igarGolv=null;
 
 (async function(){
   const s=await S.get('system');
-  if(s&&s.value){try{sys=Object.assign(sys,JSON.parse(s.value));}catch(e){}}
+  if(s&&s.value){try{const q=JSON.parse(s.value);const f=Object.assign({},sys.fold,q.fold||{});
+    sys=Object.assign(sys,q);sys.fold=f;}catch(e){}}
   const d=await S.get('day:'+IDAG);
   if(d&&d.value){try{dag=Object.assign(kopia(TOM),JSON.parse(d.value));}catch(e){}}
   const g=await S.get('day:'+IGAR);
-  if(g&&g.value){try{igar=Object.assign(kopia(TOM),JSON.parse(g.value));igarGolv=!!(igar.fotter&&igar.toa);}catch(e){}}
+  if(g&&g.value){try{igar=Object.assign(kopia(TOM),JSON.parse(g.value));igarGolv=!!(igar.fotter&&igar.toa&&igar.neigong);}catch(e){}}
   if(!Array.isArray(dag.uppg)||dag.uppg.length!==3) dag.uppg=kopia(TOM.uppg);
-  dag.uppg=dag.uppg.map(u=>Object.assign({t:'',k:false,ber:'',fakt:''},u));
+  dag.uppg=dag.uppg.map(u=>({t:u&&u.t||'',k:!!(u&&u.k)}));
   if(dag.andMin==null) dag.andMin=(typeof igar.andMin==='number')?igar.andMin:10;
   if(!sys.nasta){const n=new Date(idag);n.setDate(n.getDate()+14);sys.nasta=nk(n);}
-  Object.keys(sys.fold).forEach(f=>{
-    const h=document.querySelector('[data-fold="'+f+'"]');
-    if(h){h.setAttribute('aria-expanded',sys.fold[f]?'true':'false');
-      document.querySelector('[data-fold-body="'+f+'"]').classList.toggle('hidden',!sys.fold[f]);}});
+  Object.keys(sys.fold).forEach(f=>satt(f,sys.fold[f]));
   rita();ritaVecka();
 })();
 
@@ -408,14 +419,14 @@ function rita(){
   document.getElementById('dagnr').textContent=(isNaN(dnr)||dnr<1)?'':'dag '+dnr;
   document.querySelectorAll('.item[data-k]').forEach(el=>{
     const on=!!dag[el.dataset.k];el.classList.toggle('on',on);el.setAttribute('aria-checked',on?'true':'false');});
-  const klart=dag.fotter&&dag.toa&&dag.ikbt;
+  const klart=dag.fotter&&dag.toa&&dag.neigong;
   document.getElementById('golvBox').classList.toggle('klart',klart);
   const st=document.getElementById('golvStatus');
   st.classList.toggle('klart',klart);
   st.textContent=klart?'Dagen är godkänd. Allt härifrån är bonus.':'Tre handlingar. Sen är dagen godkänd.';
   const note=document.getElementById('golvNote');
   if(igarGolv===false&&!klart){
-    note.textContent='Igår blev golvet inte gjort. Då är idag den som räknas — missa aldrig två gånger.';
+    note.textContent='Igår blev vanorna inte gjorda. Då är idag den som räknas — missa aldrig två gånger.';
     note.classList.remove('hidden');}else note.classList.add('hidden');
   document.getElementById('andVal').textContent=(dag.andMin||0)+' min';
   document.getElementById('ikbtVad').value=dag.ikbtVad||'';
@@ -436,19 +447,18 @@ function ritaUppg(){
     const el=document.createElement('div');
     el.className='upg'+(u.k?' on':'');
     el.innerHTML='<div class="upg-top"><span class="box"></span>'+
-      '<input type="text" value="'+esc(u.t)+'" placeholder="uppgift '+(i+1)+'"></div>'+
-      '<div class="upg-tid"><span>ber.</span><input type="text" inputmode="numeric" data-f="ber" value="'+esc(u.ber)+'" placeholder="min">'+
-      '<span>faktisk</span><input type="text" inputmode="numeric" data-f="fakt" value="'+esc(u.fakt)+'" placeholder="min"></div>';
+      '<input type="text" value="'+esc(u.t)+'" placeholder="uppgift '+(i+1)+'"></div>';
     el.querySelector('.box').onclick=()=>{dag.uppg[i].k=!dag.uppg[i].k;sparaDag();rita();};
     el.querySelector('.upg-top input').oninput=e=>{dag.uppg[i].t=e.target.value;sparaDag();};
-    el.querySelectorAll('.upg-tid input').forEach(inp=>{
-      inp.oninput=e=>{dag.uppg[i][inp.dataset.f]=e.target.value.replace(/[^0-9]/g,'');sparaDag();};});
     box.appendChild(el);
   });
 }
 function ritaCnt(){
-  document.getElementById('cntMorgon').textContent=['neigong','andning','promenad','frukost'].filter(k=>dag[k]).length+'/4';
-  document.getElementById('cntKurser').textContent=['video','artikel'].filter(k=>dag[k]).length+'/2';
+  document.getElementById('cntMorgon').textContent=['andning','promenad','frukost'].filter(k=>dag[k]).length+'/3';
+  document.getElementById('cntArbete').textContent=dag.uppg.filter(u=>u.k).length+'/3';
+  document.getElementById('cntKurser').textContent=['video','artikel','ikbt'].filter(k=>dag[k]).length+'/3';
+  document.getElementById('cntStruktur').textContent=
+    [dag.obsKvall,dag.obsMorgon,dag.obsArbete].filter(x=>x&&x.trim()).length+'/3';
   document.getElementById('cntFakta').textContent=[igar.sang,igar.skarm!=null?'x':'',igar.ord].filter(Boolean).length+'/3';
 }
 
@@ -456,15 +466,19 @@ document.querySelectorAll('.item[data-k]').forEach(el=>{
   const v=()=>{dag[el.dataset.k]=!dag[el.dataset.k];sparaDag();rita();};
   el.addEventListener('click',v);
   el.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();v();}});});
-document.querySelectorAll('.fold-h').forEach(h=>{
+function satt(f,open){
+  const h=document.querySelector('[data-fold="'+f+'"]'),b=document.querySelector('[data-fold-body="'+f+'"]');
+  if(!h||!b)return;
+  h.setAttribute('aria-expanded',open?'true':'false');
+  b.classList.toggle('hidden',!open);
+  const blk=h.closest('.block');if(blk&&blk.dataset.blk===f)blk.dataset.open=open?'true':'false';}
+document.querySelectorAll('[data-fold]').forEach(h=>{
   h.onclick=()=>{const f=h.dataset.fold,open=h.getAttribute('aria-expanded')!=='true';
-    h.setAttribute('aria-expanded',open?'true':'false');
-    document.querySelector('[data-fold-body="'+f+'"]').classList.toggle('hidden',!open);
-    sys.fold[f]=open;sparaSys();};});
+    satt(f,open);sys.fold[f]=open;sparaSys();};});
 document.getElementById('andPlus').onclick=()=>{dag.andMin=Math.min(20,(dag.andMin||0)+1);sparaDag();rita();};
 document.getElementById('andMinus').onclick=()=>{dag.andMin=Math.max(0,(dag.andMin||0)-1);sparaDag();rita();};
 ['ikbtVad','lekVad','obsKvall','obsMorgon','obsArbete'].forEach(id=>{
-  document.getElementById(id).oninput=e=>{dag[id]=e.target.value;sparaDag();};});
+  document.getElementById(id).oninput=e=>{dag[id]=e.target.value;sparaDag();ritaCnt();};});
 document.getElementById('sang').oninput=e=>{igar.sang=e.target.value;sparaIgar();ritaCnt();};
 document.getElementById('ord').oninput=e=>{igar.ord=e.target.value;sparaIgar();ritaCnt();};
 document.getElementById('skarmJa').onclick=()=>{igar.skarm=igar.skarm===true?null:true;sparaIgar();rita();};
@@ -495,34 +509,14 @@ async function ritaVecka(){
   document.getElementById('kedja').innerHTML=huvud
     +rad('Till sängs',d=>d.sang||'·')+rad('Skärm sist',d=>d.skarm===true?'ja':(d.skarm===false?'nej':'·'))
     +rad('Fötterna i golvet',d=>prick(d.fotter))+rad('Toa-rutin',d=>prick(d.toa))
-    +rad('IKBT',d=>prick(d.ikbt))+rad('Ett ord',d=>d.ord?esc(d.ord):'·');
+    +rad('Neigong',d=>prick(d.neigong))+rad('Ett ord',d=>d.ord?esc(d.ord):'·');
   document.getElementById('kedja2').innerHTML=huvud
-    +rad('Neigong',d=>d.neigong?'●':'○')+rad('Andning',d=>d.andning?(d.andMin||0)+'m':'○')
-    +rad('Promenad',d=>d.promenad?'●':'○')
+    +rad('Andning',d=>d.andning?(d.andMin||0)+'m':'○')
+    +rad('Promenad',d=>d.promenad?'●':'○')+rad('Frukost',d=>d.frukost?'●':'○')
     +rad('Uppgifter',d=>Array.isArray(d.uppg)?d.uppg.filter(u=>u.k).length+'/3':'·')
     +rad('Video',d=>d.video?'●':'○')+rad('Artikel',d=>d.artikel?'●':'○')
+    +rad('IKBT',d=>d.ikbt?'●':'○')
     +rad('Struktur',d=>d.struktur?'●':'○')+rad('Lek',d=>d.lek?'●':'○');
-  ritaMult();
-}
-
-async function ritaMult(){
-  const lst=await S.list('day:');const keys=(lst&&lst.keys?lst.keys:[]);
-  let ber=0,fakt=0,n=0;
-  for(const key of keys){
-    let o=null;
-    if(key==='day:'+IDAG)o=dag;else if(key==='day:'+IGAR)o=igar;
-    else{const r=await S.get(key);if(r&&r.value){try{o=JSON.parse(r.value);}catch(e){}}}
-    if(!o||!Array.isArray(o.uppg))continue;
-    o.uppg.forEach(u=>{const b=parseInt(u.ber,10),f=parseInt(u.fakt,10);
-      if(!isNaN(b)&&!isNaN(f)&&b>0){ber+=b;fakt+=f;n++;}});}
-  const el=document.getElementById('multN'),t=document.getElementById('multT');
-  if(n<3){el.textContent='—';
-    t.textContent='Fyll i beräknad och faktisk tid på uppgifterna. Efter ett par veckor vet du hur mycket du behöver lägga på dina gissningar när vi bokar in saker i kalendern.';
-    return;}
-  const m=fakt/ber;
-  el.textContent='×'+m.toFixed(2);
-  t.textContent=n+' uppgifter. Du gissar '+(m>1?'för lågt':'för högt')+
-    ' — räkna med att '+Math.round(60*m)+' min går åt när du planerat en timme.';
 }
 
 function ritaOversyn(){
@@ -553,13 +547,14 @@ document.getElementById('sparaInst').onclick=async()=>{
   const sd=document.getElementById('startDatum').value;if(sd)sys.start=sd;
   await sparaSys();rita();kvittera('instSaved','Sparade');};
 
-const KOL=[['datum','datum'],['fotter','golv_fotterna'],['toa','golv_toarutin'],['ikbt','golv_ikbt'],['ikbtVad','ikbt_modul'],
-  ['neigong','neigong'],['andning','andning'],['andMin','andning_min'],['promenad','promenad'],['frukost','frukost'],
+const KOL=[['datum','datum'],['fotter','vana_fotterna'],['toa','vana_toarutin'],['neigong','vana_neigong'],
+  ['andning','andning'],['andMin','andning_min'],['promenad','promenad'],['frukost','frukost'],
   ['malskrivna','malen_skrivna'],
-  ['u1','uppgift1'],['u1k','uppgift1_klar'],['u1b','uppgift1_ber_min'],['u1f','uppgift1_fakt_min'],
-  ['u2','uppgift2'],['u2k','uppgift2_klar'],['u2b','uppgift2_ber_min'],['u2f','uppgift2_fakt_min'],
-  ['u3','uppgift3'],['u3k','uppgift3_klar'],['u3b','uppgift3_ber_min'],['u3f','uppgift3_fakt_min'],
-  ['video','kurs_video'],['artikel','kurs_artikel'],['struktur','struktur'],['lek','lek'],['lekVad','lek_vad'],
+  ['u1','uppgift1'],['u1k','uppgift1_klar'],
+  ['u2','uppgift2'],['u2k','uppgift2_klar'],
+  ['u3','uppgift3'],['u3k','uppgift3_klar'],
+  ['video','kurs_video'],['artikel','kurs_artikel'],['ikbt','ikbt'],['ikbtVad','ikbt_modul'],
+  ['struktur','struktur'],['lek','lek'],['lekVad','lek_vad'],
   ['sang','till_sangs'],['skarm','skarm_sist'],['ord','ett_ord'],
   ['obsKvall','obs_kvall'],['obsMorgon','obs_morgon'],['obsArbete','obs_arbetsdag']];
 
@@ -574,7 +569,7 @@ document.getElementById('exportBtn').onclick=async()=>{
     let o;try{o=JSON.parse(r.value);}catch(e){continue;}
     o.datum=key.replace('day:','');
     if(Array.isArray(o.uppg))o.uppg.forEach((u,i)=>{
-      o['u'+(i+1)]=u.t;o['u'+(i+1)+'k']=u.k;o['u'+(i+1)+'b']=u.ber;o['u'+(i+1)+'f']=u.fakt;});
+      o['u'+(i+1)]=u.t;o['u'+(i+1)+'k']=u.k;});
     rader.push(KOL.map(k=>{let v=o[k[0]];
       if(v===true)v='ja';else if(v===false)v='nej';else if(v==null)v='';
       return '"'+String(v).replace(/"/g,'""')+'"';}).join(','));}

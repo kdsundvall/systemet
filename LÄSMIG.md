@@ -1,6 +1,6 @@
 # Systemet
 
-Golv · bonus · inget däremellan.
+Vanor · bonus · inget däremellan.
 
 ## Så öppnar du det
 Dubbelklicka `starta.command`. Sidan öppnas på `http://127.0.0.1:8787/systemet.html`.
