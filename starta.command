@@ -12,7 +12,7 @@ else
   python3 -m http.server $PORT --bind 127.0.0.1 >/dev/null 2>&1 &
   sleep 1
 fi
-open "http://127.0.0.1:$PORT/systemet.html"
-echo "Systemet körs på http://127.0.0.1:$PORT/systemet.html"
+open "http://127.0.0.1:$PORT/"
+echo "Systemet körs på http://127.0.0.1:$PORT/  (den stora versionen: /systemet.html)"
 echo "Stäng det här fönstret när du är klar för dagen."
 wait

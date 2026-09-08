@@ -59,7 +59,7 @@ innan den skickas — adressen ensam räcker inte för att läsa något.
 
 1. Skapa ett konto på [github.com](https://github.com) om du inte har ett.
 2. Nytt repo, döp det till `systemet`, sätt det till **Public**.
-3. Ladda upp `enkel.html`. Döp om den till `index.html` i uppladdningen.
+3. Ladda upp filerna. Sidan heter redan `index.html`.
 4. **Settings → Pages → Source: Deploy from a branch → main / (root) → Save.**
 5. Efter någon minut ligger sidan på `https://<ditt-namn>.github.io/systemet/`.
 
