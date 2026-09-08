@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Systemet · enkel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EDEFF0;--ground:#1F2729;--ink:#14191A;--muted:#6E7A7C;
+  --line:#D2D8D9;--pine:#2F5A4C;--pine-lit:#5FA98E}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Familjen Grotesk",system-ui,sans-serif;
+  font-size:16px;line-height:1.45;padding-bottom:60px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:620px;margin:0 auto;padding:0 18px}
+header{padding:26px 0 12px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);display:flex;justify-content:space-between;align-items:baseline}
+h1{font-size:clamp(30px,9vw,42px);line-height:.98;margin:10px 0 0;font-weight:700;letter-spacing:-.025em}
+h1 em{font-style:italic;font-weight:400}
+nav{display:flex;border-bottom:1px solid var(--line);margin-top:18px}
+nav button{flex:1;background:none;border:0;padding:12px 2px;cursor:pointer;font-family:"IBM Plex Mono",monospace;
+  font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  border-bottom:2px solid transparent;margin-bottom:-1px}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+nav button:focus-visible{outline:2px solid var(--pine);outline-offset:-2px}
+
+.golv{background:var(--ground);color:#E9EDEC;margin:20px 0 0;padding:20px 18px 18px;border-radius:3px;
+  transition:box-shadow .35s ease}
+.golv.klart{box-shadow:0 10px 0 -4px rgba(47,90,76,.55)}
+.golv-lbl{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:#8E9C9A;margin-bottom:14px;display:flex;justify-content:space-between}
+.golv .item{border-color:rgba(255,255,255,.13)}
+.golv .item label{color:#E9EDEC;font-size:19px}
+.golv .box{border-color:#65726F}
+.golv .item.on .box{background:var(--pine-lit);border-color:var(--pine-lit)}
+.golv .item.on .box:after{border-color:var(--ground)}
+.golv-status{margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.13);font-size:14px;color:#9AA8A6}
+.golv-status.klart{color:var(--pine-lit)}
+.golv-note{margin-top:8px;font-size:13.5px;color:#B9C4C2;line-height:1.4}
+
+.block{margin-top:26px}
+#tab-idag{counter-reset:blk}
+#tab-idag .block{counter-increment:blk;background:#fff;border:1px solid var(--line);border-radius:3px;
+  padding:0 15px 14px;margin-top:22px}
+#tab-idag .block[data-open="false"]{padding-bottom:0;background:#F5F7F7}
+.blk-h{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:7px;
+  border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+button.blk-h{width:100%;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer;
+  text-align:left;padding:15px 0 11px;align-items:center}
+button.blk-h:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+#tab-idag .block[data-open="false"] button.blk-h{border-bottom-color:transparent}
+.blk-h .t{font-family:"Familjen Grotesk",sans-serif;font-size:20.5px;font-weight:600;letter-spacing:-.025em;
+  text-transform:none;color:var(--ink);line-height:1.05}
+#tab-idag .blk-h .t:before{content:counter(blk,decimal-leading-zero);font-family:"IBM Plex Mono",monospace;
+  font-size:11px;font-weight:400;letter-spacing:.1em;color:var(--muted);margin-right:10px;vertical-align:3px}
+.blk-h .meta{display:flex;align-items:center;gap:11px;flex:none}
+.blk-h .note{letter-spacing:.04em;text-transform:none;font-size:11px}
+.blurb{font-size:13.5px;color:var(--muted);margin:9px 0 2px;line-height:1.45}
+
+.fold-h{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:11px 0 8px;
+  cursor:pointer;text-align:left;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pm{flex:none;width:19px;height:19px;border:1px solid var(--line);border-radius:2px;position:relative;background:#fff}
+.pm:before,.pm:after{content:"";position:absolute;background:var(--muted);left:50%;top:50%;
+  transform:translate(-50%,-50%)}
+.pm:before{width:9px;height:1.5px}
+.pm:after{width:1.5px;height:9px;transition:opacity .15s ease}
+[aria-expanded="true"] .pm:after{opacity:0}
+.fold-h .spc{flex:1}
+.cnt{letter-spacing:.04em;text-transform:none;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+.fold-h:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+
+.item{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line);
+  cursor:pointer;min-height:48px}
+.item:last-child{border-bottom:0}
+.box{flex:none;width:21px;height:21px;border:1.5px solid #A9B3B4;border-radius:2px;position:relative;
+  transition:background .12s ease,border-color .12s ease}
+.box:after{content:"";position:absolute;left:6.5px;top:2.5px;width:5px;height:10px;border:solid #fff;
+  border-width:0 2px 2px 0;transform:rotate(42deg) scale(.5);opacity:0;
+  transition:opacity .12s ease,transform .12s ease}
+.item.on .box{background:var(--ink);border-color:var(--ink)}
+.item.on .box:after{opacity:1;transform:rotate(42deg) scale(1)}
+.item label{flex:1;cursor:pointer;font-size:16px}
+.item.on label{color:var(--muted)}
+.item:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+.cap{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+
+.field{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:0}
+.field .lbl{flex:none;width:104px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--muted)}
+input[type=text],input[type=time],input[type=date],input[type=password],textarea{flex:1;width:100%;
+  font-family:"Familjen Grotesk",sans-serif;font-size:15.5px;color:var(--ink);background:#fff;
+  border:1px solid var(--line);border-radius:2px;padding:9px 10px}
+textarea{resize:vertical;min-height:82px;line-height:1.45}
+input:focus,textarea:focus{outline:0;border-color:var(--ink)}
+input::placeholder,textarea::placeholder{color:#9CA6A7}
+.obs{margin-top:16px}
+.obs-l{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:6px}
+
+.pair{display:flex;gap:7px;flex:1}
+.pair button{flex:1;padding:9px 4px;border:1px solid var(--line);background:#fff;border-radius:2px;
+  font-family:"Familjen Grotesk",sans-serif;font-size:14.5px;color:var(--muted);cursor:pointer}
+.pair button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+.chain{margin-top:8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.wk{border-collapse:collapse;width:100%;min-width:400px}
+table.wk th,table.wk td{font-family:"IBM Plex Mono",monospace;font-size:11px;text-align:center;padding:7px 2px;
+  border-bottom:1px solid var(--line)}
+table.wk th{color:var(--muted);font-weight:400;letter-spacing:.06em}
+table.wk td.row-lbl,table.wk th.row-lbl{text-align:left;width:104px;color:var(--muted);letter-spacing:.04em;
+  text-transform:uppercase;font-size:10px}
+table.wk td.idag{background:rgba(47,90,76,.07)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;border:1.5px solid #B4BDBE}
+.dot.fill{background:var(--pine);border-color:var(--pine)}
+.chain-key{font-size:12.5px;color:var(--muted);margin-top:11px;line-height:1.5}
+
+.streck{background:var(--ground);color:#E9EDEC;border-radius:3px;padding:17px 16px;margin-top:14px}
+.streck .n{font-family:"IBM Plex Mono",monospace;font-size:34px;letter-spacing:-.03em;line-height:1}
+.streck .n small{font-size:13px;letter-spacing:.06em;color:#9AA8A6;margin-left:7px}
+.streck .nasta{font-size:13.5px;color:#B9C4C2;margin-top:8px;line-height:1.45}
+.fira{background:var(--pine);color:#fff;border-radius:3px;padding:13px 15px;margin-top:12px;font-size:15px;line-height:1.4}
+.fira b{font-weight:600}
+.mil{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.mil:last-child{border-bottom:0}
+.mil .d{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);flex:none;width:62px;padding-top:3px}
+.mil .k{flex:none;width:14px;padding-top:2px;color:var(--pine)}
+.mil .txt{flex:1;font-size:14px;line-height:1.45}
+.mil .txt b{font-weight:600}
+.mil.passerad .txt{color:var(--muted)}
+
+.q{margin-top:20px}
+.q-n{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.q-t{font-size:16.5px;margin:4px 0 8px;line-height:1.35}
+.btn{display:inline-block;width:100%;padding:13px;border:1px solid var(--ink);background:var(--ink);color:#fff;
+  border-radius:2px;cursor:pointer;font-family:"Familjen Grotesk",sans-serif;font-size:15px}
+.btn.ghost{background:none;color:var(--ink)}
+.btn:active{opacity:.82}
+.saved{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--pine);text-align:center;margin-top:9px;
+  min-height:15px;letter-spacing:.06em}
+.princip{border-left:2px solid var(--ink);padding:2px 0 2px 14px;margin:16px 0;font-size:14.5px;line-height:1.5}
+.princip b{font-weight:600}
+.logg{border:1px solid var(--line);background:#fff;border-radius:2px;padding:12px 13px;margin-top:11px}
+.logg .dt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted);
+  text-transform:uppercase}
+.logg p{margin:6px 0 0;font-size:14px;line-height:1.5;white-space:pre-wrap}
+.hidden{display:none}
+.err{font-size:13px;color:#8A4A3C;background:#F6E9E6;border:1px solid #E4CBC5;padding:10px 12px;border-radius:2px;
+  margin-top:14px;line-height:1.45}
+footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-align:center;padding-bottom:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow"><span id="datum">—</span><span id="dagnr">—</span></div>
+  <h1>Systemet<em>.</em></h1>
+</header>
+
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-tab="idag">Idag</button>
+  <button role="tab" aria-selected="false" data-tab="vecka">Vecka</button>
+  <button role="tab" aria-selected="false" data-tab="oversyn">Översyn</button>
+  <button role="tab" aria-selected="false" data-tab="sys">System</button>
+</nav>
+
+<div id="fel" class="err hidden"></div>
+
+<div id="tab-idag">
+
+  <div class="golv" id="golvBox">
+    <div class="golv-lbl"><span>Vanor</span><span>det jag står för</span></div>
+    <div class="item" data-k="fotter" tabindex="0" role="checkbox" aria-checked="false">
+      <span class="box"></span><label>Fötterna i golvet när alarmet ringer</label></div>
+    <div class="item" data-k="toa" tabindex="0" role="checkbox" aria-checked="false">
+      <span class="box"></span><label>Toa-rutin</label></div>
+    <div class="item" data-k="neigong" tabindex="0" role="checkbox" aria-checked="false">
+      <span class="box"></span><label>Neigong, minst 2 min</label></div>
+    <div class="golv-status" id="golvStatus">Tre handlingar. Sen är dagen godkänd.</div>
+    <div class="golv-note hidden" id="golvNote"></div>
+  </div>
+
+  <div class="block" data-blk="bLek">
+    <button class="blk-h" data-fold="bLek" aria-expanded="true">
+      <span class="t">Lek</span>
+      <span class="meta"><span class="note">1,5 h · vänner, skoj, träning</span><span class="pm"></span></span></button>
+    <div data-fold-body="bLek">
+      <div class="item" data-k="lek" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="box"></span><label>Lek-blocket</label></div>
+      <div class="obs"><div class="obs-l">Vad jag gjorde</div>
+        <textarea id="lekVad" placeholder="Vad det blev, och med vem."></textarea></div>
+    </div>
+  </div>
+
+  <div class="block" data-blk="bNarvaro">
+    <button class="blk-h" data-fold="bNarvaro" aria-expanded="true">
+      <span class="t">Närvaro</span>
+      <span class="meta"><span class="note">fakta, inte betyg</span><span class="pm"></span></span></button>
+    <div data-fold-body="bNarvaro">
+
+      <div class="streck">
+        <div class="n" id="streckN">—<small>dagar utan porr</small></div>
+        <div class="nasta" id="streckNasta">Sätt datumet för senaste gången så börjar räkningen.</div>
+      </div>
+      <div class="fira hidden" id="fira"></div>
+
+      <div class="item" data-k="porr" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="box"></span><label>Kollade porr</label></div>
+      <div class="item" data-k="runk" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="box"></span><label>Runkade</label></div>
+      <div class="field" id="narvRad"><span class="lbl">Hur</span><span class="pair">
+        <button type="button" id="narvJa" aria-pressed="false">Närvarande</button>
+        <button type="button" id="narvNej" aria-pressed="false">Ej närvarande</button></span></div>
+      <div class="obs"><div class="obs-l">Vad kom före <span style="text-transform:none;letter-spacing:0">· valfritt</span></div>
+        <input type="text" id="notering" placeholder="trött, uttråkad, ensam, sent uppe, skärm i sängen"></div>
+      <div class="field"><span class="lbl">Senast porr</span><input type="date" id="porrSenast"></div>
+
+      <button class="fold-h" data-fold="milstolpar" aria-expanded="false" style="margin-top:14px">
+        <span class="pm"></span><span class="spc">Hållpunkter</span><span class="cnt" id="cntMil"></span></button>
+      <div data-fold-body="milstolpar" class="hidden">
+        <div id="milLista"></div>
+        <div class="blurb" style="margin-top:12px">Det som cirkulerar som exakta veckoscheman över dopaminreceptorer
+          är inte belagt hos människor. Det som är väl beskrivet är att sug, sömn och humör förändras över veckor,
+          och att hållpunkter hjälper. Siffrorna här är något att fira, inte hjärnavbildning.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block" data-blk="bFakta">
+    <button class="blk-h" data-fold="bFakta" aria-expanded="true">
+      <span class="t">Igår kväll</span>
+      <span class="meta"><span class="note">tre fakta</span>
+        <span class="cnt" id="cntFakta"></span><span class="pm"></span></span></button>
+    <div data-fold-body="bFakta">
+      <div class="blurb">Sparas på gårdagens datum, så kedjan i Vecka blir rätt.</div>
+      <div class="field"><span class="lbl">Till sängs</span><input type="time" id="sang"></div>
+      <div class="field"><span class="lbl">Skärm sist</span><span class="pair">
+        <button type="button" id="skarmJa" aria-pressed="false">Ja</button>
+        <button type="button" id="skarmNej" aria-pressed="false">Nej</button></span></div>
+      <div class="field"><span class="lbl">Ett ord</span>
+        <input type="text" id="ord" maxlength="24" placeholder="tillståndet, ett ord"></div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-vecka" class="hidden">
+  <div class="block" style="margin-top:22px">
+    <div class="blk-h"><span>Kedjan</span><span class="note">kväll → morgon</span></div>
+    <div class="blurb">Den enda korrelationen som betyder något just nu: vad kvällen gjorde med fötterna i golvet.</div>
+    <div class="chain"><table class="wk" id="kedja"></table></div>
+    <div class="chain-key">Fylld prick = gjort. Tom = inte gjort. Punkt = ingen data den dagen.</div>
+  </div>
+</div>
+
+<div id="tab-oversyn" class="hidden">
+  <div class="block" style="margin-top:22px">
+    <div class="blk-h"><span>Översyn</span><span class="note" id="nastaText">—</span></div>
+    <div class="blurb">Var fjortonde dag. Den enda platsen där något ändras — inte i stunden, inte en trög morgon.</div>
+
+    <div class="q"><div class="q-n">01 · Hur gick det</div>
+      <div class="q-t">Vad hände de här två veckorna?</div>
+      <textarea id="o1" placeholder="Beskriv, betygsätt inte. Vad gjordes, vad gled, vad var lättare än väntat."></textarea></div>
+
+    <div class="q"><div class="q-n">02 · Justering</div>
+      <div class="q-t">Vad ska justeras, och hur testar du det?</div>
+      <textarea id="o2" placeholder="Exempel: varannan morgon glömde jag borsta tänderna → jag lägger en påminnelse på telefonen kl 07:00 och testar en vecka.&#10;&#10;En justering i taget. Den ska vara en konkret handling, inte en föresats."></textarea>
+      <div class="field" style="margin-top:10px"><span class="lbl">Testar till</span><input type="date" id="oTest"></div></div>
+
+    <div class="q"><div class="q-n">03 · Lägga till</div>
+      <div class="q-t">Ska något nytt in?</div>
+      <textarea id="o3" placeholder="En ny vana i taget, under två minuter, staplad på ett befintligt ankare. Eller: nej, inget den här gången — det är ett lika bra svar."></textarea></div>
+
+    <div class="princip"><b>Missen är information om en designbrist, inte en dom över dig.</b>
+      Snoozet visade sig vara en vana utan definierad minsta handling. Leta efter samma sak här.</div>
+
+    <div class="field" style="margin-top:16px"><span class="lbl">Nästa översyn</span><input type="date" id="nastaDatum"></div>
+    <button class="btn" id="sparaOversyn" style="margin-top:14px">Spara översyn</button>
+    <div class="saved" id="oSaved"></div>
+  </div>
+
+  <div class="block">
+    <button class="fold-h" data-fold="logg" aria-expanded="false">
+      <span class="pm"></span><span class="spc">Tidigare översyner</span><span class="cnt" id="cntLogg"></span></button>
+    <div data-fold-body="logg" class="hidden"><div id="loggLista"></div></div>
+  </div>
+</div>
+
+<div id="tab-sys" class="hidden">
+  <div class="block" style="margin-top:22px">
+    <div class="blk-h"><span>Principerna</span></div>
+    <div class="princip"><b>Två kategorier, aldrig tre.</b> Allt är antingen en vana med en definierad minsta
+      handling, eller äkta bonus. Så fort något känns som ett krav utan minsta handling — ge det en, eller släpp det.</div>
+    <div class="princip"><b>Observera dagligen, ändra varannan vecka.</b> En dag är brus. Mönster syns först över tid.</div>
+    <div class="princip"><b>Missa aldrig två gånger.</b> En dag är data. Två i rad är en riktning.</div>
+  </div>
+
+  <div class="block">
+    <div class="blk-h"><span>Synk</span><span class="note">telefon ↔ dator</span></div>
+    <div class="blurb">Datan krypteras i den här webbläsaren innan den skickas, och lagras i din egen Google Drive.
+      Lösenordet lämnar aldrig enheten — tappar du det går datan inte att läsa. Se SYNK.md för uppsättningen.
+      Lämnar du fälten tomma sparas allt bara lokalt.</div>
+    <div class="field"><span class="lbl">Adress</span><input type="text" id="synkUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
+    <div class="field"><span class="lbl">Lösenord</span><input type="password" id="synkFras" placeholder="samma på alla enheter"></div>
+    <button class="btn ghost" id="synkSpara" style="margin-top:12px">Spara och skicka upp</button>
+    <button class="btn ghost" id="synkHamta" style="margin-top:8px">Hämta ner nu</button>
+    <div class="saved" id="synkSaved"></div>
+  </div>
+
+  <div class="block">
+    <div class="blk-h"><span>Inställningar</span></div>
+    <div class="field"><span class="lbl">Dag 1 var</span><input type="date" id="startDatum"></div>
+    <button class="btn ghost" id="sparaInst" style="margin-top:12px">Spara inställningar</button>
+    <div class="saved" id="instSaved"></div>
+  </div>
+
+  <div class="block">
+    <div class="blk-h"><span>Backup</span><span class="note">på den här enheten</span></div>
+    <div class="blurb">CSV är för att titta på. JSON är den som kan läsas tillbaka.</div>
+    <button class="btn" id="exportBtn" style="margin-top:8px">Ladda ner all data som CSV</button>
+    <button class="btn ghost" id="jsonBtn" style="margin-top:8px">Ladda ner backup (JSON)</button>
+    <button class="btn ghost" id="jsonImp" style="margin-top:8px">Läs tillbaka en backup</button>
+    <input type="file" id="jsonFil" accept="application/json,.json" class="hidden">
+    <div class="saved" id="expSaved"></div>
+  </div>
+</div>
+
+<footer>Vanor · bonus · inget däremellan</footer>
+</div>
+
+<script>
+/* ---------- lagring ---------- */
+const mem={},NYCK='enkel:';
+const LS=(function(){try{const t=NYCK+'__probe';localStorage.setItem(t,'1');localStorage.removeItem(t);return localStorage;}catch(e){return null;}})();
+const S={
+  get(k){if(LS){const v=LS.getItem(NYCK+k);return v===null?null:v;}return mem[k]!==undefined?mem[k]:null;},
+  set(k,v){mem[k]=v;if(LS){try{LS.setItem(NYCK+k,v);}catch(e){visaFel('Webbläsaren låter inte sidan spara.');}}else visaFel('Webbläsaren låter inte sidan spara.');},
+  keys(p){if(LS){const o=[];for(let i=0;i<LS.length;i++){const k=LS.key(i);
+    if(k&&k.indexOf(NYCK)===0&&k.slice(NYCK.length).indexOf(p)===0)o.push(k.slice(NYCK.length));}return o;}
+    return Object.keys(mem).filter(x=>x.indexOf(p)===0);}
+};
+function visaFel(t){const f=document.getElementById('fel');
+  f.textContent=t+' Det du skriver finns kvar på skärmen men försvinner vid omladdning. Prova ett vanligt fönster i stället för privat läge.';
+  f.classList.remove('hidden');}
+
+/* ---------- datum ---------- */
+const idag=new Date();
+const nk=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const IDAG=nk(idag);
+const igarD=new Date(idag);igarD.setDate(igarD.getDate()-1);
+const IGAR=nk(igarD);
+const VD=['sön','mån','tis','ons','tor','fre','lör'];
+const MN=['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
+const dagarMellan=(a,b)=>Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/86400000);
+
+/* ---------- hållpunkter ---------- */
+const MILSTOLPAR=[
+ {d:3,t:'Tre dagar',s:'Brantast här. Sug och irritation brukar vara som mest påtagliga de första dygnen.'},
+ {d:7,t:'En vecka',s:'Första riktiga hållpunkten. Sömnen är det som oftast märks först.'},
+ {d:14,t:'Två veckor',s:'Impulsen kommer fortfarande. Det som brukar ändras är mellanrummet mellan impuls och handling.'},
+ {d:21,t:'Tre veckor',s:'Ungefär här slutar det vara en pågående ansträngning och börjar bli en vardag.'},
+ {d:30,t:'30 dagar',s:'Många beskriver en svacka runt den här punkten — lägre lust överlag, inte bara mot porr. Den brukar gå över. Det är inte ett tecken på att något gått sönder.'},
+ {d:60,t:'60 dagar',s:'Tillräckligt långt för att du ska ha data: du vet nu vilka situationer som faktiskt drar.'},
+ {d:90,t:'90 dagar',s:'Siffran som oftast nämns som "reboot". Den är folklore snarare än mätt neurovetenskap — men det är en bra sträcka att sikta mot.'},
+ {d:180,t:'Ett halvår',s:'Här är det inte längre ett projekt.'},
+ {d:365,t:'Ett år',s:''}
+];
+
+/* ---------- modell ---------- */
+const TOM={fotter:false,toa:false,neigong:false,lek:false,lekVad:'',
+  porr:false,runk:false,narvaro:null,notering:'',sang:'',skarm:null,ord:''};
+const kopia=o=>JSON.parse(JSON.stringify(o));
+let dag=kopia(TOM),igar=kopia(TOM);
+let sys={start:'2026-08-23',porrSenast:'',forePorr:'',oversyn:{o1:'',o2:'',o3:'',test:''},logg:[],nasta:'',
+  fold:{bLek:true,bNarvaro:true,bFakta:true,milstolpar:false,logg:false},synk:{url:'',fras:''}};
+let igarVanor=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function ladda(){
+  const s=S.get('system');
+  if(s){try{const q=JSON.parse(s);const f=Object.assign({},sys.fold,q.fold||{});
+    sys=Object.assign(sys,q);sys.fold=f;sys.synk=Object.assign({url:'',fras:''},q.synk||{});
+    if(!Array.isArray(sys.logg))sys.logg=[];}catch(e){}}
+  const d=S.get('day:'+IDAG);dag=kopia(TOM);
+  if(d){try{dag=Object.assign(kopia(TOM),JSON.parse(d));}catch(e){}}
+  const g=S.get('day:'+IGAR);igar=kopia(TOM);
+  if(g){try{igar=Object.assign(kopia(TOM),JSON.parse(g));}catch(e){}}
+  igarVanor=g?!!(igar.fotter&&igar.toa&&igar.neigong):null;
+  if(!sys.nasta){const n=new Date(idag);n.setDate(n.getDate()+14);sys.nasta=nk(n);}
+}
+
+/* ---------- fällning ---------- */
+function satt(f,open){
+  const h=document.querySelector('[data-fold="'+f+'"]'),b=document.querySelector('[data-fold-body="'+f+'"]');
+  if(!h||!b)return;
+  h.setAttribute('aria-expanded',open?'true':'false');
+  b.classList.toggle('hidden',!open);
+  const blk=h.closest('.block');if(blk&&blk.dataset.blk===f)blk.dataset.open=open?'true':'false';}
+document.querySelectorAll('[data-fold]').forEach(h=>{
+  h.onclick=()=>{const f=h.dataset.fold,open=h.getAttribute('aria-expanded')!=='true';
+    satt(f,open);sys.fold[f]=open;sparaSys();};});
+
+/* ---------- sparning ---------- */
+let t1=null,t2=null;
+function rort(){S.set('meta',JSON.stringify({uppdaterad:Date.now()}));synkaSenare();}
+function sparaDag(){clearTimeout(t1);t1=setTimeout(()=>{S.set('day:'+IDAG,JSON.stringify(dag));rort();},250);}
+function sparaIgar(){clearTimeout(t2);t2=setTimeout(()=>{S.set('day:'+IGAR,JSON.stringify(igar));rort();},250);}
+function sparaSys(){S.set('system',JSON.stringify(sys));rort();}
+function kvittera(id,t){const e=document.getElementById(id);e.textContent=t;setTimeout(()=>{if(e.textContent===t)e.textContent='';},2800);}
+
+/* ---------- rita ---------- */
+function rita(){
+  const dnr=dagarMellan(sys.start,IDAG)+1;
+  document.getElementById('datum').textContent=VD[idag.getDay()]+' '+idag.getDate()+' '+MN[idag.getMonth()];
+  document.getElementById('dagnr').textContent=(isNaN(dnr)||dnr<1)?'':'dag '+dnr;
+  document.querySelectorAll('.item[data-k]').forEach(el=>{
+    const on=!!dag[el.dataset.k];el.classList.toggle('on',on);el.setAttribute('aria-checked',on?'true':'false');});
+  const klart=dag.fotter&&dag.toa&&dag.neigong;
+  document.getElementById('golvBox').classList.toggle('klart',klart);
+  const st=document.getElementById('golvStatus');
+  st.classList.toggle('klart',klart);
+  st.textContent=klart?'Dagen är godkänd. Allt härifrån är bonus.':'Tre handlingar. Sen är dagen godkänd.';
+  const note=document.getElementById('golvNote');
+  if(igarVanor===false&&!klart){
+    note.textContent='Igår blev vanorna inte gjorda. Då är idag den som räknas — missa aldrig två gånger.';
+    note.classList.remove('hidden');}else note.classList.add('hidden');
+
+  document.getElementById('lekVad').value=dag.lekVad||'';
+  document.getElementById('notering').value=dag.notering||'';
+  document.getElementById('narvRad').classList.toggle('hidden',!dag.runk);
+  document.getElementById('narvJa').setAttribute('aria-pressed',dag.narvaro===true?'true':'false');
+  document.getElementById('narvNej').setAttribute('aria-pressed',dag.narvaro===false?'true':'false');
+  document.getElementById('porrSenast').value=sys.porrSenast||'';
+  document.getElementById('sang').value=igar.sang||'';
+  document.getElementById('ord').value=igar.ord||'';
+  document.getElementById('skarmJa').setAttribute('aria-pressed',igar.skarm===true?'true':'false');
+  document.getElementById('skarmNej').setAttribute('aria-pressed',igar.skarm===false?'true':'false');
+  document.getElementById('cntFakta').textContent=[igar.sang,igar.skarm!=null?'x':'',igar.ord].filter(Boolean).length+'/3';
+  ritaStreck();
+}
+
+function ritaStreck(){
+  const n=document.getElementById('streckN'),nasta=document.getElementById('streckNasta'),
+        fira=document.getElementById('fira'),lista=document.getElementById('milLista');
+  let d=null;
+  if(sys.porrSenast){const x=dagarMellan(sys.porrSenast,IDAG);if(!isNaN(x)&&x>=0)d=x;}
+  if(d===null){
+    n.innerHTML='—<small>dagar utan porr</small>';
+    nasta.textContent='Sätt datumet för senaste gången så börjar räkningen.';
+    fira.classList.add('hidden');
+    document.getElementById('cntMil').textContent='';
+  }else{
+    n.innerHTML=d+'<small>'+(d===1?'dag':'dagar')+' utan porr</small>';
+    const nm=MILSTOLPAR.find(m=>m.d>d);
+    nasta.textContent=nm?('Nästa hållpunkt: '+nm.t.toLowerCase()+', om '+(nm.d-d)+' '+((nm.d-d)===1?'dag':'dagar')+'.')
+      :'Bortom sista hållpunkten.';
+    const traff=MILSTOLPAR.find(m=>m.d===d);
+    if(traff){fira.innerHTML='<b>Idag: '+esc(traff.t)+'.</b> '+esc(traff.s||'Fira det.');fira.classList.remove('hidden');}
+    else fira.classList.add('hidden');
+    document.getElementById('cntMil').textContent=MILSTOLPAR.filter(m=>m.d<=d).length+'/'+MILSTOLPAR.length;
+  }
+  lista.innerHTML=MILSTOLPAR.map(m=>{
+    const passerad=(d!==null&&d>=m.d);
+    return '<div class="mil'+(passerad?' passerad':'')+'"><span class="d">'+m.d+' d</span>'+
+      '<span class="k">'+(passerad?'✓':'')+'</span>'+
+      '<span class="txt"><b>'+esc(m.t)+'</b>'+(m.s?' — '+esc(m.s):'')+'</span></div>';}).join('');
+}
+
+/* ---------- interaktion ---------- */
+document.querySelectorAll('.item[data-k]').forEach(el=>{
+  const v=()=>{
+    const k=el.dataset.k;
+    dag[k]=!dag[k];
+    if(k==='porr'){
+      if(dag.porr){sys.forePorr=sys.porrSenast;sys.porrSenast=IDAG;}
+      else if(sys.porrSenast===IDAG){sys.porrSenast=sys.forePorr||'';}
+      sparaSys();
+    }
+    if(k==='runk'&&!dag.runk)dag.narvaro=null;
+    sparaDag();rita();};
+  el.addEventListener('click',v);
+  el.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();v();}});});
+
+['lekVad','notering'].forEach(id=>{
+  document.getElementById(id).oninput=e=>{dag[id]=e.target.value;sparaDag();};});
+document.getElementById('narvJa').onclick=()=>{dag.narvaro=dag.narvaro===true?null:true;sparaDag();rita();};
+document.getElementById('narvNej').onclick=()=>{dag.narvaro=dag.narvaro===false?null:false;sparaDag();rita();};
+document.getElementById('porrSenast').onchange=e=>{sys.porrSenast=e.target.value;sparaSys();ritaStreck();};
+document.getElementById('sang').oninput=e=>{igar.sang=e.target.value;sparaIgar();rita();};
+document.getElementById('ord').oninput=e=>{igar.ord=e.target.value;sparaIgar();rita();};
+document.getElementById('skarmJa').onclick=()=>{igar.skarm=igar.skarm===true?null:true;sparaIgar();rita();};
+document.getElementById('skarmNej').onclick=()=>{igar.skarm=igar.skarm===false?null:false;sparaIgar();rita();};
+
+document.querySelectorAll('nav button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    ['idag','vecka','oversyn','sys'].forEach(t=>
+      document.getElementById('tab-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+    if(b.dataset.tab==='vecka')ritaVecka();
+    if(b.dataset.tab==='oversyn')ritaOversyn();
+    if(b.dataset.tab==='sys')ritaSys();
+    window.scrollTo(0,0);};});
+
+/* ---------- vecka ---------- */
+function ritaVecka(){
+  const dagar=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(idag);d.setDate(d.getDate()-i);const k=nk(d);
+    let data=k===IDAG?dag:(k===IGAR?igar:null);
+    if(!data){const r=S.get('day:'+k);if(r){try{data=JSON.parse(r);}catch(e){}}}
+    dagar.push({d,k,data});}
+  const huvud='<tr><th class="row-lbl"></th>'+dagar.map(x=>
+    '<th'+(x.k===IDAG?' class="idag"':'')+'>'+VD[x.d.getDay()]+'<br>'+x.d.getDate()+'</th>').join('')+'</tr>';
+  const rad=(l,fn)=>'<tr><td class="row-lbl">'+l+'</td>'+dagar.map(x=>
+    '<td'+(x.k===IDAG?' class="idag"':'')+'>'+(x.data?fn(x.data):'·')+'</td>').join('')+'</tr>';
+  const prick=v=>'<span class="dot'+(v?' fill':'')+'"></span>';
+  document.getElementById('kedja').innerHTML=huvud
+    +rad('Till sängs',d=>d.sang||'·')
+    +rad('Skärm sist',d=>d.skarm===true?'ja':(d.skarm===false?'nej':'·'))
+    +rad('Fötterna i golvet',d=>prick(d.fotter))
+    +rad('Toa-rutin',d=>prick(d.toa))
+    +rad('Neigong',d=>prick(d.neigong))
+    +rad('Lek',d=>prick(d.lek))
+    +rad('Porr',d=>d.porr?'ja':'—')
+    +rad('Runk',d=>d.runk?(d.narvaro===false?'ej närv':'närv'):'—')
+    +rad('Ett ord',d=>d.ord?esc(d.ord):'·');
+}
+
+/* ---------- översyn ---------- */
+function ritaOversyn(){
+  document.getElementById('o1').value=sys.oversyn.o1||'';
+  document.getElementById('o2').value=sys.oversyn.o2||'';
+  document.getElementById('o3').value=sys.oversyn.o3||'';
+  document.getElementById('oTest').value=sys.oversyn.test||'';
+  document.getElementById('nastaDatum').value=sys.nasta||'';
+  const kvar=dagarMellan(IDAG,sys.nasta);
+  document.getElementById('nastaText').textContent=isNaN(kvar)?'':
+    (kvar>0?kvar+' dagar kvar':(kvar===0?'idag':'försenad '+(-kvar)+' d'));
+  document.getElementById('cntLogg').textContent=sys.logg.length?sys.logg.length+' st':'';
+  document.getElementById('loggLista').innerHTML=sys.logg.length?sys.logg.slice().reverse().map(l=>
+    '<div class="logg"><div class="dt">'+esc(l.datum)+(l.test?' · testar till '+esc(l.test):'')+'</div>'+
+    (l.o1?'<p>'+esc(l.o1)+'</p>':'')+(l.o2?'<p><b>Justering:</b> '+esc(l.o2)+'</p>':'')+
+    (l.o3?'<p><b>Nytt:</b> '+esc(l.o3)+'</p>':'')+'</div>').join('')
+    :'<div class="blurb">Inga sparade översyner än.</div>';
+}
+document.getElementById('sparaOversyn').onclick=()=>{
+  const o={o1:document.getElementById('o1').value,o2:document.getElementById('o2').value,
+           o3:document.getElementById('o3').value,test:document.getElementById('oTest').value};
+  sys.oversyn=o;
+  const n=document.getElementById('nastaDatum').value;if(n)sys.nasta=n;
+  if(o.o1.trim()||o.o2.trim()||o.o3.trim())
+    sys.logg.push({datum:IDAG,o1:o.o1,o2:o.o2,o3:o.o3,test:o.test});
+  sparaSys();ritaOversyn();kvittera('oSaved','Sparad i loggen');};
+
+/* ---------- system ---------- */
+function ritaSys(){
+  document.getElementById('startDatum').value=sys.start;
+  document.getElementById('synkUrl').value=sys.synk.url||'';
+  document.getElementById('synkFras').value=sys.synk.fras||'';
+}
+document.getElementById('sparaInst').onclick=()=>{
+  const sd=document.getElementById('startDatum').value;if(sd)sys.start=sd;
+  sparaSys();rita();kvittera('instSaved','Sparade');};
+
+/* ---------- kryptering + synk ---------- */
+const b64=b=>{let s='';const a=new Uint8Array(b);for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);};
+const ab=s=>{const t=atob(s),a=new Uint8Array(t.length);for(let i=0;i<t.length;i++)a[i]=t.charCodeAt(i);return a;};
+async function nyckel(fras,salt){
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(fras),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,
+    {name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+async function kryptera(txt,fras){
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const k=await nyckel(fras,salt);
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(txt));
+  return b64(salt)+'.'+b64(iv)+'.'+b64(ct);}
+async function dekryptera(str,fras){
+  const p=str.split('.');if(p.length!==3)throw new Error('format');
+  const k=await nyckel(fras,ab(p[0]));
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ab(p[1])},k,ab(p[2]));
+  return new TextDecoder().decode(pt);}
+
+function helaState(){
+  const ut={uppdaterad:Date.now(),system:S.get('system'),dagar:{}};
+  try{const m=JSON.parse(S.get('meta')||'{}');if(m.uppdaterad)ut.uppdaterad=m.uppdaterad;}catch(e){}
+  S.keys('day:').forEach(k=>{ut.dagar[k]=S.get(k);});
+  return ut;}
+function skrivState(o){
+  if(o.system)S.set('system',o.system);
+  for(const k in o.dagar){if(/^day:\d{4}-\d{2}-\d{2}$/.test(k))S.set(k,o.dagar[k]);}
+  S.set('meta',JSON.stringify({uppdaterad:o.uppdaterad||Date.now()}));}
+
+let synkTimer=null;
+function synkaSenare(){
+  if(!sys.synk.url||!sys.synk.fras)return;
+  clearTimeout(synkTimer);synkTimer=setTimeout(()=>skickaUpp(true),4000);}
+
+async function skickaUpp(tyst){
+  if(!sys.synk.url||!sys.synk.fras){if(!tyst)kvittera('synkSaved','Ingen adress angiven');return;}
+  if(!window.crypto||!crypto.subtle){if(!tyst)kvittera('synkSaved','Kryptering kräver https');return;}
+  try{
+    const data=await kryptera(JSON.stringify(helaState()),sys.synk.fras);
+    const r=await fetch(sys.synk.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({data})});
+    if(!r.ok)throw new Error(r.status);
+    if(!tyst)kvittera('synkSaved','Uppskickat');
+  }catch(e){kvittera('synkSaved','Kunde inte skicka upp');}
+}
+async function hamtaNer(){
+  if(!sys.synk.url||!sys.synk.fras){kvittera('synkSaved','Ingen adress angiven');return;}
+  if(!window.crypto||!crypto.subtle){kvittera('synkSaved','Kryptering kräver https');return;}
+  try{
+    const r=await fetch(sys.synk.url,{method:'GET'});
+    const j=await r.json();
+    if(!j||!j.data){kvittera('synkSaved','Inget uppe än');return;}
+    const o=JSON.parse(await dekryptera(j.data,sys.synk.fras));
+    let lokal=0;try{lokal=(JSON.parse(S.get('meta')||'{}').uppdaterad)||0;}catch(e){}
+    if((o.uppdaterad||0)<=lokal){kvittera('synkSaved','Redan aktuell');return;}
+    skrivState(o);kvittera('synkSaved','Hämtad — laddar om');
+    setTimeout(()=>location.reload(),800);
+  }catch(e){kvittera('synkSaved','Kunde inte läsa — fel lösenord eller adress?');}
+}
+document.getElementById('synkSpara').onclick=()=>{
+  sys.synk.url=document.getElementById('synkUrl').value.trim();
+  sys.synk.fras=document.getElementById('synkFras').value;
+  sparaSys();skickaUpp(false);};
+document.getElementById('synkHamta').onclick=hamtaNer;
+
+/* ---------- export ---------- */
+function laddaNer(namn,innehall,typ){
+  const blob=new Blob([innehall],{type:typ});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=namn;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
+
+const KOL=[['datum','datum'],['fotter','vana_fotterna'],['toa','vana_toarutin'],['neigong','vana_neigong'],
+  ['lek','lek'],['lekVad','lek_vad'],
+  ['porr','porr'],['runk','runk'],['narvaro','runk_narvarande'],['notering','vad_kom_fore'],
+  ['sang','till_sangs'],['skarm','skarm_sist'],['ord','ett_ord']];
+
+document.getElementById('exportBtn').onclick=()=>{
+  S.set('day:'+IDAG,JSON.stringify(dag));S.set('day:'+IGAR,JSON.stringify(igar));
+  const keys=S.keys('day:').sort();
+  const rader=[KOL.map(k=>k[1]).join(',')];
+  keys.forEach(key=>{
+    let o;try{o=JSON.parse(S.get(key));}catch(e){return;}
+    o.datum=key.replace('day:','');
+    rader.push(KOL.map(k=>{let v=o[k[0]];
+      if(v===true)v='ja';else if(v===false)v='nej';else if(v==null)v='';
+      return '"'+String(v).replace(/"/g,'""')+'"';}).join(','));});
+  laddaNer('systemet-enkel-'+IDAG+'.csv',"﻿"+rader.join('\n'),'text/csv;charset=utf-8');
+  kvittera('expSaved',(rader.length-1)+' dagar exporterade');};
+
+document.getElementById('jsonBtn').onclick=()=>{
+  S.set('day:'+IDAG,JSON.stringify(dag));S.set('day:'+IGAR,JSON.stringify(igar));
+  const ut=helaState();ut.v=1;
+  laddaNer('systemet-enkel-backup-'+IDAG+'.json',JSON.stringify(ut,null,1),'application/json');
+  kvittera('expSaved',Object.keys(ut.dagar).length+' dagar säkrade');};
+document.getElementById('jsonImp').onclick=()=>document.getElementById('jsonFil').click();
+document.getElementById('jsonFil').onchange=e=>{
+  const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    let o;try{o=JSON.parse(rd.result);}catch(err){kvittera('expSaved','Filen gick inte att läsa');return;}
+    if(!o||!o.dagar){kvittera('expSaved','Fel filformat');return;}
+    const n=Object.keys(o.dagar).length;
+    if(!confirm('Läser tillbaka '+n+' dagar. Dagar med samma datum skrivs över. Fortsätt?'))return;
+    skrivState(o);kvittera('expSaved',n+' dagar inlästa — laddar om');
+    setTimeout(()=>location.reload(),900);};
+  rd.readAsText(f);};
+
+/* ---------- start ---------- */
+ladda();
+Object.keys(sys.fold).forEach(f=>satt(f,sys.fold[f]));
+rita();
+if(sys.synk.url&&sys.synk.fras)hamtaNer();
+</script>
+</body>
+</html>
