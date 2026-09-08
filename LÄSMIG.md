@@ -3,11 +3,14 @@
 Vanor · bonus · inget däremellan.
 
 ## Så öppnar du det
-Dubbelklicka `starta.command`. Sidan öppnas på `http://127.0.0.1:8787/systemet.html`.
 
-Adressen måste vara **samma varje gång** — det är den webbläsaren knyter dina dagar till.
-Bokmärk den. Öppnar du `systemet.html` genom att dubbelklicka på filen i stället kan
-webbläsaren spara på en annan plats, eller inte alls (då syns en röd ruta överst).
+**https://kdsundvall.github.io/systemet/** — på telefonen och på datorn.
+Den stora versionen: `/systemet.html`.
+
+Använd den adressen, inte filen på datorn. Webbläsaren knyter dina dagar till adressen,
+så samma adress varje gång är skillnaden mellan en kedja och ingen kedja.
+`starta.command` finns kvar för att köra lokalt när du utvecklar, men den har sin egen
+separata lagring — blanda inte.
 
 ## Backup
 System-fliken, längst ner:
