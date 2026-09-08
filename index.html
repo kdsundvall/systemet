@@ -419,7 +419,7 @@ let t1=null,t2=null;
 function rort(){S.set('meta',JSON.stringify({uppdaterad:Date.now()}));synkaSenare();}
 function sparaDag(){clearTimeout(t1);t1=setTimeout(()=>{S.set('day:'+IDAG,JSON.stringify(dag));rort();},250);}
 function sparaIgar(){clearTimeout(t2);t2=setTimeout(()=>{S.set('day:'+IGAR,JSON.stringify(igar));rort();},250);}
-function sparaSys(){S.set('system',JSON.stringify(sys));rort();}
+function sparaSys(rorDatan){S.set('system',JSON.stringify(sys));if(rorDatan!==false)rort();}
 function kvittera(id,t){const e=document.getElementById(id);e.textContent=t;setTimeout(()=>{if(e.textContent===t)e.textContent='';},2800);}
 
 /* ---------- rita ---------- */
@@ -595,50 +595,81 @@ async function dekryptera(str,fras){
   return new TextDecoder().decode(pt);}
 
 function helaState(){
-  const ut={uppdaterad:Date.now(),system:S.get('system'),dagar:{}};
+  // synk-inställningarna följer aldrig med upp — lösenordet stannar på enheten
+  let sysUt=S.get('system');
+  try{const q=JSON.parse(sysUt||'{}');delete q.synk;sysUt=JSON.stringify(q);}catch(e){}
+  const ut={uppdaterad:Date.now(),system:sysUt,dagar:{}};
   try{const m=JSON.parse(S.get('meta')||'{}');if(m.uppdaterad)ut.uppdaterad=m.uppdaterad;}catch(e){}
   S.keys('day:').forEach(k=>{ut.dagar[k]=S.get(k);});
   return ut;}
 function skrivState(o){
-  if(o.system)S.set('system',o.system);
+  if(o.system){
+    // behåll den här enhetens egna synk-inställningar
+    let q=null;try{q=JSON.parse(o.system);}catch(e){}
+    if(q){q.synk=sys.synk;S.set('system',JSON.stringify(q));}
+    else S.set('system',o.system);}
   for(const k in o.dagar){if(/^day:\d{4}-\d{2}-\d{2}$/.test(k))S.set(k,o.dagar[k]);}
   S.set('meta',JSON.stringify({uppdaterad:o.uppdaterad||Date.now()}));}
 
-let synkTimer=null;
+let synkTimer=null,synkKlar=false;
 function synkaSenare(){
-  if(!sys.synk.url||!sys.synk.fras)return;
+  if(!sys.synk.url||!sys.synk.fras||!synkKlar)return;
   clearTimeout(synkTimer);synkTimer=setTimeout(()=>skickaUpp(true),4000);}
+async function remoteTid(){
+  try{const j=await fetch(sys.synk.url).then(x=>x.json());
+    if(!j||!j.data)return 0;
+    return (JSON.parse(await dekryptera(j.data,sys.synk.fras)).uppdaterad)||0;
+  }catch(e){return -1;}}
+function lokalTid(){try{return (JSON.parse(S.get('meta')||'{}').uppdaterad)||0;}catch(e){return 0;}}
+
+function lasSynkFalt(){
+  const u=document.getElementById('synkUrl'),f=document.getElementById('synkFras');
+  if(!u||!f)return;
+  const nu=u.value.trim(),nf=f.value;
+  if(nu!==sys.synk.url||nf!==sys.synk.fras){
+    sys.synk.url=nu;sys.synk.fras=nf;synkKlar=false;sparaSys(false);}}
+function synkSaknas(){
+  if(!sys.synk.url){kvittera('synkSaved','Fyll i adressen först');return true;}
+  if(!sys.synk.fras){kvittera('synkSaved','Fyll i lösenordet först');return true;}
+  return false;}
 
 async function skickaUpp(tyst){
-  if(!sys.synk.url||!sys.synk.fras){if(!tyst)kvittera('synkSaved','Ingen adress angiven');return;}
+  if(!sys.synk.url||!sys.synk.fras){if(!tyst)synkSaknas();return;}
   if(!window.crypto||!crypto.subtle){if(!tyst)kvittera('synkSaved','Kryptering kräver https');return;}
   try{
+    if(!tyst){
+      const rt=await remoteTid();
+      if(rt===-1&&!confirm('Kunde inte läsa det som ligger uppe — fel lösenord, eller inget uppe än. Skriva över det?'))return;
+      if(rt>lokalTid()&&!confirm('Det som ligger uppe är nyare än det här. Skriva över det?'))return;
+    }
     const data=await kryptera(JSON.stringify(helaState()),sys.synk.fras);
     const r=await fetch(sys.synk.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({data})});
     if(!r.ok)throw new Error(r.status);
+    synkKlar=true;
     if(!tyst)kvittera('synkSaved','Uppskickat');
   }catch(e){kvittera('synkSaved','Kunde inte skicka upp');}
 }
-async function hamtaNer(){
-  if(!sys.synk.url||!sys.synk.fras){kvittera('synkSaved','Ingen adress angiven');return;}
+async function hamtaNer(manuell){
+  if(manuell)lasSynkFalt();
+  if(synkSaknas())return;
   if(!window.crypto||!crypto.subtle){kvittera('synkSaved','Kryptering kräver https');return;}
   try{
     const r=await fetch(sys.synk.url,{method:'GET'});
     const j=await r.json();
-    if(!j||!j.data){kvittera('synkSaved','Inget uppe än');return;}
+    if(!j||!j.data){synkKlar=true;kvittera('synkSaved','Inget uppe än');return;}
     const o=JSON.parse(await dekryptera(j.data,sys.synk.fras));
     let lokal=0;try{lokal=(JSON.parse(S.get('meta')||'{}').uppdaterad)||0;}catch(e){}
-    if((o.uppdaterad||0)<=lokal){kvittera('synkSaved','Redan aktuell');return;}
-    skrivState(o);kvittera('synkSaved','Hämtad — laddar om');
+    if((o.uppdaterad||0)<=lokal){synkKlar=true;kvittera('synkSaved','Redan aktuell');return;}
+    skrivState(o);synkKlar=true;kvittera('synkSaved','Hämtad — laddar om');
     setTimeout(()=>location.reload(),800);
   }catch(e){kvittera('synkSaved','Kunde inte läsa — fel lösenord eller adress?');}
 }
 document.getElementById('synkSpara').onclick=()=>{
-  sys.synk.url=document.getElementById('synkUrl').value.trim();
-  sys.synk.fras=document.getElementById('synkFras').value;
-  sparaSys();skickaUpp(false);};
-document.getElementById('synkHamta').onclick=hamtaNer;
+  lasSynkFalt();
+  if(synkSaknas())return;
+  skickaUpp(false);};
+document.getElementById('synkHamta').onclick=()=>hamtaNer(true);
 
 /* ---------- export ---------- */
 function laddaNer(namn,innehall,typ){
@@ -686,8 +717,8 @@ document.getElementById('jsonFil').onchange=e=>{
 /* ---------- start ---------- */
 ladda();
 Object.keys(sys.fold).forEach(f=>satt(f,sys.fold[f]));
-rita();
-if(sys.synk.url&&sys.synk.fras)hamtaNer();
+rita();ritaSys();
+if(sys.synk.url&&sys.synk.fras)hamtaNer(false);
 </script>
 </body>
 </html>
