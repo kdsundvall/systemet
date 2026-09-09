@@ -67,8 +67,16 @@ Repot är publikt, men det innehåller bara sidan. Ingen av din data finns i fil
 
 ## Del 3 · Koppla ihop
 
-På **varje** enhet: öppna sidan, gå till System → Synk, klistra in adressen från del 1,
-välj ett lösenord, tryck *Spara och skicka upp*. Samma lösenord överallt.
+Öppna **uppkopplingslänken** på enheten. Den fyller i adressen åt dig:
+
+```
+https://kdsundvall.github.io/systemet/#synk=aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6akVzZGJ6Q1dsc2puQmlkMXg4ODNVSmxOUGcydU83UmtOTjRqRU5qNkxUaFMwOXNEelRvc1VPT2lfZEprQ0tNVXovZXhlYw==
+```
+
+Gå till System → Synk och skriv lösenordet. Ingen knapp behövs — appen hämtar ner
+av sig själv en dryg sekund efter att lösenordet är ifyllt, och laddar om sig.
+
+Samma lösenord på alla enheter. Spara länken där du hittar den igen.
 
 Lägg till sidan på hemskärmen på telefonen så beter den sig som en app.
 

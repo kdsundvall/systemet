@@ -394,6 +394,11 @@ let sys={start:'2026-08-23',porrSenast:'',forePorr:'',oversyn:{o1:'',o2:'',o3:''
 let igarVanor=null;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+function synkFranLank(){
+  const m=(location.hash||'').match(/synk=([A-Za-z0-9_\-=]+)/);
+  if(!m)return null;
+  try{return atob(m[1].replace(/-/g,'+').replace(/_/g,'/'));}catch(e){return null;}}
+
 function ladda(){
   const s=S.get('system');
   if(s){try{const q=JSON.parse(s);const f=Object.assign({},sys.fold,q.fold||{});
@@ -405,6 +410,9 @@ function ladda(){
   if(g){try{igar=Object.assign(kopia(TOM),JSON.parse(g));}catch(e){}}
   igarVanor=g?!!(igar.fotter&&igar.toa&&igar.neigong):null;
   if(!sys.nasta){const n=new Date(idag);n.setDate(n.getDate()+14);sys.nasta=nk(n);}
+  const franLank=synkFranLank();
+  if(franLank&&franLank!==sys.synk.url){sys.synk.url=franLank;S.set('system',JSON.stringify(sys));}
+  if(franLank)history.replaceState(null,'',location.pathname);
 }
 
 /* ---------- fällning ---------- */
@@ -588,6 +596,8 @@ function ritaSys(){
       String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     const ord={ner:'Hämtade ner',upp:'Skickade upp',aktuell:'Kollade molnet — allt var redan aktuellt'}[st.vad]||st.vad;
     rad+='<br>'+ord+(st.vad==='aktuell'?'':' <b>'+st.antal+'</b> '+(st.antal===1?'dag':'dagar'))+' · '+nar+'.';
+  }else if(sys.synk.url&&!sys.synk.fras){
+    rad+='<br><b>Adressen är ifylld.</b> Skriv lösenordet så hämtas allt ner av sig själv.';
   }else if(sys.synk.url&&sys.synk.fras){
     rad+='<br>Ingen synk har körts på den här enheten än.';
   }else{
@@ -693,6 +703,10 @@ async function hamtaNer(manuell){
     // och har molnet fler dagar än enheten är enheten efter oavsett vad klockan säger.
     const behovs=(o.uppdaterad||0)>lokal || lokalaDagar===0 || fjarrDagar>lokalaDagar;
     if(!behovs){synkKlar=true;noteraSynk('aktuell',0);kvittera('synkSaved','Redan aktuell');ritaSys();return;}
+    if(fjarrDagar<lokalaDagar&&
+       !confirm('Molnkopian har '+fjarrDagar+' dagar, den här enheten har '+lokalaDagar+
+                '. Hämtar du ner ersätts dina '+lokalaDagar+' dagar. Fortsätta?')){
+      kvittera('synkSaved','Avbröt');return;}
     skrivState(o);synkKlar=true;
     noteraSynk('ner',Object.keys(o.dagar).length);
     kvittera('synkSaved','Hämtad — laddar om');
@@ -704,6 +718,18 @@ document.getElementById('synkSpara').onclick=()=>{
   if(synkSaknas())return;
   skickaUpp(false);};
 document.getElementById('synkHamta').onclick=()=>hamtaNer(true);
+
+// Fyller du i båda fälten hämtar appen ner av sig själv. Ingen knapp att komma ihåg.
+let autoTimer=null,senastProvad='';
+function kanskeAutoHamta(){
+  const u=document.getElementById('synkUrl').value.trim(),f=document.getElementById('synkFras').value;
+  if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u)||!f)return;
+  const kombo=u+'|'+f;
+  if(kombo===senastProvad)return;
+  clearTimeout(autoTimer);
+  autoTimer=setTimeout(()=>{senastProvad=kombo;lasSynkFalt();hamtaNer(false);},1200);}
+['synkUrl','synkFras'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',kanskeAutoHamta);});
 
 /* ---------- export ---------- */
 function laddaNer(namn,innehall,typ){
