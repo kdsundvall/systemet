@@ -23,3 +23,17 @@ Drive och telefonen är bara en kopia.
 ## Synken
 
 Se SYNK.md. Samma adress och samma lösenord på varje enhet.
+
+## Om molnkopian är fel och datorn har rätt data
+
+Molnkopian är bara en kopia. Har en enhet rätt data gör du så här från den:
+
+1. Öppna appen på den enhet som har rätt data
+2. System → Synk → **Spara och skicka upp**
+3. Får du frågan *"Det som ligger uppe är nyare"* eller *"Kunde inte läsa det som
+   ligger uppe"* — svara OK. Det är kopian du vill ersätta.
+4. På övriga enheter: **Hämta ner nu**
+
+En enhet skickar aldrig upp något automatiskt förrän den hämtat ner minst en gång,
+och en automatisk synk skriver aldrig över något nyare. Det manuella uppskicket är
+det enda som kan skriva över — och det frågar först.
