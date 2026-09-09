@@ -637,8 +637,11 @@ async function skickaUpp(tyst){
   if(!sys.synk.url||!sys.synk.fras){if(!tyst)synkSaknas();return;}
   if(!window.crypto||!crypto.subtle){if(!tyst)kvittera('synkSaved','Kryptering kräver https');return;}
   try{
-    if(!tyst){
-      const rt=await remoteTid();
+    const rt=await remoteTid();
+    if(tyst){
+      // en tyst synk skriver aldrig över något nyare — då är den andra enheten före
+      if(rt>lokalTid()){kvittera('synkSaved','Nyare data finns uppe — tryck Hämta ner nu');return;}
+    }else{
       if(rt===-1&&!confirm('Kunde inte läsa det som ligger uppe — fel lösenord, eller inget uppe än. Skriva över det?'))return;
       if(rt>lokalTid()&&!confirm('Det som ligger uppe är nyare än det här. Skriva över det?'))return;
     }
@@ -719,6 +722,13 @@ ladda();
 Object.keys(sys.fold).forEach(f=>satt(f,sys.fold[f]));
 rita();ritaSys();
 if(sys.synk.url&&sys.synk.fras)hamtaNer(false);
+
+// Appen ligger kvar öppen på telefonen. När du plockar upp den igen:
+// har dygnet vänt laddas den om, annars hämtas det som hänt på andra enheter.
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible')return;
+  if(nk(new Date())!==IDAG){location.reload();return;}
+  if(sys.synk.url&&sys.synk.fras&&synkKlar)hamtaNer(false);});
 </script>
 </body>
 </html>
