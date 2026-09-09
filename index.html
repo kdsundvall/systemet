@@ -638,9 +638,12 @@ function helaState(){
   return ut;}
 function skrivState(o){
   if(o.system){
-    // behåll den här enhetens egna synk-inställningar
+    // fält för fält, så en delvis fil bara ändrar det den nämner
     let q=null;try{q=JSON.parse(o.system);}catch(e){}
-    if(q){q.synk=sys.synk;S.set('system',JSON.stringify(q));}
+    if(q){let lokal={};try{lokal=JSON.parse(S.get('system')||'{}');}catch(e){}
+      const ny=Object.assign(lokal,q);
+      ny.synk=sys.synk;              // synk-inställningarna är alltid enhetens egna
+      S.set('system',JSON.stringify(ny));}
     else S.set('system',o.system);}
   for(const k in o.dagar){if(/^day:\d{4}-\d{2}-\d{2}$/.test(k))S.set(k,o.dagar[k]);}
   S.set('meta',JSON.stringify({uppdaterad:o.uppdaterad||Date.now()}));}
