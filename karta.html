@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Systemet · kartan</title>
+<link rel="apple-touch-icon" href="ikon-180.png">
+<link rel="icon" href="ikon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EDEFF0;--ground:#1F2729;--ink:#14191A;--muted:#6E7A7C;
+  --line:#D2D8D9;--pine:#2F5A4C;--pine-lit:#5FA98E}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Familjen Grotesk",system-ui,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:60px}
+.wrap{max-width:660px;margin:0 auto;padding:0 18px}
+header{padding:30px 0 6px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted)}
+h1{font-size:clamp(30px,9vw,42px);line-height:.98;margin:10px 0 0;font-weight:700;letter-spacing:-.025em}
+h1 em{font-style:italic;font-weight:400}
+.ingress{font-size:17px;margin:16px 0 0;line-height:1.5}
+h2{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;margin:38px 0 0;padding-bottom:7px;border-bottom:1px solid var(--line)}
+p{margin:14px 0 0}
+figure{margin:20px 0 0;background:#fff;border:1px solid var(--line);border-radius:3px;padding:18px 16px 14px}
+.fig-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+figure svg{display:block;width:100%;height:auto;color:var(--ink);min-width:470px}
+.rulla{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;color:var(--muted);
+  margin-top:8px;display:none}
+@media (max-width:520px){.rulla{display:block}}
+figcaption{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);
+  font-size:13.5px;color:var(--muted);line-height:1.5}
+.nod{fill:#fff;stroke:currentColor;stroke-width:1.4}
+.nod-fylld{fill:var(--ground);stroke:var(--ground)}
+.nod-pine{fill:var(--pine);stroke:var(--pine)}
+.t{font-family:"Familjen Grotesk",sans-serif;font-size:15px;fill:var(--ink)}
+.t-vit{fill:#E9EDEC}
+.t-liten{font-family:"IBM Plex Mono",monospace;font-size:11px;fill:var(--muted);letter-spacing:.04em}
+.t-vit-liten{font-family:"IBM Plex Mono",monospace;font-size:11px;fill:#9AA8A6;letter-spacing:.04em}
+.pil{stroke:currentColor;stroke-width:1.4;fill:none}
+.pil-pine{stroke:var(--pine);stroke-width:1.6;fill:none}
+table{border-collapse:collapse;width:100%;margin-top:16px;font-size:14.5px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:400}
+td:first-child{width:34%;font-weight:600}
+.princip{border-left:2px solid var(--ink);padding:2px 0 2px 14px;margin:18px 0 0;font-size:15px;line-height:1.5}
+.princip b{font-weight:600}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-align:center}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Systemet · infrastruktur</div>
+  <h1>Kartan<em>.</em></h1>
+  <p class="ingress">Två vägar som aldrig korsar varandra. <b>Koden</b> går via GitHub och är
+  offentlig. <b>Datan</b> går via din Google Drive och är krypterad. Ingen av dem passerar
+  Claude när systemet väl är i drift.</p>
+</header>
+
+<h2>Vägen koden tar</h2>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 600 668" role="img" aria-label="Koden går från dig via Claude Code till filer på din Mac, pushas till GitHub, som bygger och serverar sidan på kdsundvall.github.io/systemet/">
+  <defs>
+    <marker id="p" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="currentColor"/>
+    </marker>
+  </defs>
+
+  <rect class="nod" x="150" y="16" width="300" height="54" rx="3"/>
+  <text class="t" x="300" y="41" text-anchor="middle">Du</text>
+  <text class="t-liten" x="300" y="58" text-anchor="middle">skriver vad du vill ha</text>
+
+  <line class="pil" x1="300" y1="70" x2="300" y2="112" marker-end="url(#p)"/>
+  <text class="t-liten" x="312" y="95">i en chatt</text>
+
+  <rect class="nod" x="150" y="118" width="300" height="54" rx="3"/>
+  <text class="t" x="300" y="143" text-anchor="middle">Claude Code</text>
+  <text class="t-liten" x="300" y="160" text-anchor="middle">skriver och testar koden</text>
+
+  <line class="pil" x1="300" y1="172" x2="300" y2="214" marker-end="url(#p)"/>
+  <text class="t-liten" x="312" y="197">sparar filerna</text>
+
+  <rect class="nod" x="150" y="220" width="300" height="54" rx="3"/>
+  <text class="t" x="300" y="245" text-anchor="middle">~/Systemet</text>
+  <text class="t-liten" x="300" y="262" text-anchor="middle">mappen på din Mac</text>
+
+  <line class="pil" x1="300" y1="274" x2="300" y2="316" marker-end="url(#p)"/>
+  <text class="t-liten" x="312" y="299">git push</text>
+
+  <rect class="nod" x="150" y="322" width="300" height="54" rx="3"/>
+  <text class="t" x="300" y="347" text-anchor="middle">GitHub</text>
+  <text class="t-liten" x="300" y="364" text-anchor="middle">kdsundvall/systemet · publikt</text>
+
+  <line class="pil" x1="300" y1="376" x2="300" y2="418" marker-end="url(#p)"/>
+  <text class="t-liten" x="312" y="401">bygger automatiskt</text>
+
+  <rect class="nod" x="150" y="424" width="300" height="54" rx="3"/>
+  <text class="t" x="300" y="449" text-anchor="middle">GitHub Pages</text>
+  <text class="t-liten" x="300" y="466" text-anchor="middle">gratis webbhotell</text>
+
+  <line class="pil" x1="300" y1="478" x2="300" y2="520" marker-end="url(#p)"/>
+  <text class="t-liten" x="312" y="503">serverar sidan</text>
+
+  <rect class="nod nod-pine" x="105" y="526" width="390" height="60" rx="3"/>
+  <text class="t t-vit" x="300" y="551" text-anchor="middle">kdsundvall.github.io/systemet/</text>
+  <text class="t-vit-liten" x="300" y="570" text-anchor="middle">adressen du öppnar</text>
+
+  <line class="pil" x1="300" y1="586" x2="300" y2="622" marker-end="url(#p)"/>
+
+  <rect class="nod" x="105" y="628" width="390" height="34" rx="3"/>
+  <text class="t-liten" x="300" y="649" text-anchor="middle">HTML, CSS och JavaScript — noll data</text>
+</svg></div>
+<div class="rulla">← dra i sidled för att se hela</div>
+<figcaption>Allt i den här kedjan är kod. Filen som når din webbläsare innehåller
+inte en enda av dina dagar. Det är därför repot kan vara publikt utan att det gör något.</figcaption>
+</figure>
+
+<p>Claude finns bara högst upp, i bygget. När sidan väl ligger uppe är den ute ur bilden —
+appen anropar den aldrig och behöver den inte. Slutar du betala fortsätter allt precis som förut.</p>
+
+<h2>Vägen datan tar</h2>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 660 604" role="img" aria-label="Dina dagar sparas lokalt i varje enhet, krypteras i webbläsaren med ditt lösenord, och lagras som en oläslig sträng via ditt eget Apps Script i din Google Drive">
+  <defs>
+    <marker id="p2" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="currentColor"/>
+    </marker>
+    <marker id="p3" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#2F5A4C"/>
+    </marker>
+  </defs>
+
+  <rect class="nod" x="20" y="16" width="280" height="96" rx="3"/>
+  <text class="t" x="160" y="42" text-anchor="middle">Mac · webbläsaren</text>
+  <line x1="36" y1="56" x2="284" y2="56" stroke="#D2D8D9" stroke-width="1"/>
+  <text class="t-liten" x="160" y="76" text-anchor="middle">localStorage</text>
+  <text class="t-liten" x="160" y="95" text-anchor="middle">dagarna · lösenordet</text>
+
+  <rect class="nod" x="360" y="16" width="280" height="96" rx="3"/>
+  <text class="t" x="500" y="42" text-anchor="middle">iPhone · hemskärmen</text>
+  <line x1="376" y1="56" x2="624" y2="56" stroke="#D2D8D9" stroke-width="1"/>
+  <text class="t-liten" x="500" y="76" text-anchor="middle">localStorage</text>
+  <text class="t-liten" x="500" y="95" text-anchor="middle">dagarna · lösenordet</text>
+
+  <line class="pil-pine" x1="160" y1="112" x2="160" y2="168" marker-end="url(#p3)"/>
+  <line class="pil-pine" x1="500" y1="112" x2="500" y2="168" marker-end="url(#p3)"/>
+
+  <rect class="nod nod-pine" x="20" y="174" width="620" height="60" rx="3"/>
+  <text class="t t-vit" x="330" y="199" text-anchor="middle">Kryptering i webbläsaren</text>
+  <text class="t-vit-liten" x="330" y="218" text-anchor="middle">AES-GCM · nyckeln räknas fram ur ditt lösenord</text>
+
+  <line class="pil" x1="330" y1="234" x2="330" y2="292" marker-end="url(#p2)"/>
+  <text class="t-liten" x="342" y="258">skickar upp när något ändras</text>
+  <text class="t-liten" x="342" y="276">hämtar ner när appen öppnas</text>
+
+  <rect class="nod" x="120" y="298" width="420" height="60" rx="3"/>
+  <text class="t" x="330" y="323" text-anchor="middle">Google Apps Script</text>
+  <text class="t-liten" x="330" y="342" text-anchor="middle">ditt eget skript · adressen som slutar på /exec</text>
+
+  <line class="pil" x1="330" y1="358" x2="330" y2="410" marker-end="url(#p2)"/>
+  <text class="t-liten" x="342" y="388">skriver filen</text>
+
+  <rect class="nod" x="120" y="416" width="420" height="60" rx="3"/>
+  <text class="t" x="330" y="441" text-anchor="middle">Din Google Drive</text>
+  <text class="t-liten" x="330" y="460" text-anchor="middle">systemet-synk.json</text>
+
+  <line class="pil" x1="330" y1="476" x2="330" y2="514" marker-end="url(#p2)"/>
+
+  <rect class="nod nod-fylld" x="70" y="520" width="520" height="66" rx="3"/>
+  <text class="t t-vit" x="330" y="546" text-anchor="middle">4MmUsa+sYXBqp2hHADqsfA==.oUYLVUTET2UMmKsL.EzOkof…</text>
+  <text class="t-vit-liten" x="330" y="568" text-anchor="middle">så här ser din data ut för Google</text>
+</svg></div>
+<div class="rulla">← dra i sidled för att se hela</div>
+<figcaption>Krypteringen sker i webbläsaren, före nätverket. Det som lämnar enheten är
+redan oläsligt, och nyckeln räknas fram ur lösenordet varje gång — den lagras aldrig
+någon annanstans än på enheten.</figcaption>
+</figure>
+
+<p>Det gröna bandet är hela poängen. Allt ovanför det är läsbart och finns bara på dina
+enheter. Allt nedanför är en teckensträng som varken Google eller jag kan tolka.</p>
+
+<h2>Vem ser vad</h2>
+
+<table>
+  <tr><th>Vem</th><th>Ser</th></tr>
+  <tr><td>Claude</td><td>Koden, medan den skrivs. Aldrig dina dagar — appen anropar
+    ingenting hos Claude.</td></tr>
+  <tr><td>GitHub</td><td>Koden, offentligt. Ingen data passerar dem.</td></tr>
+  <tr><td>Google</td><td>En krypterad sträng i din egen Drive. De kan se att filen finns
+    och hur stor den är, inte vad den innehåller.</td></tr>
+  <tr><td>Du</td><td>Allt. Enda platsen där lösenordet finns är dina egna enheter.</td></tr>
+</table>
+
+<div class="princip"><b>Tappar du lösenordet finns ingen väg tillbaka till datan.</b>
+Det är samma egenskap som gör att ingen annan kommer åt den. Skriv ner det på papper.</div>
+
+<h2>Om något försvinner</h2>
+
+<table>
+  <tr><th>Om detta försvinner</th><th>Då händer</th></tr>
+  <tr><td>Claude</td><td>Ingenting. Systemet är färdigt och kör utan mig. Koden ligger i
+    din mapp och på GitHub.</td></tr>
+  <tr><td>GitHub</td><td>Adressen slutar fungera. Filerna finns kvar på din Mac —
+    dubbelklicka <code>starta.command</code> så kör den lokalt igen.</td></tr>
+  <tr><td>Google</td><td>Synken slutar fungera. Dagarna finns kvar i varje enhets
+    webbläsare, och i JSON-backupen.</td></tr>
+  <tr><td>Din dator</td><td>Datan finns i molnkopian och på telefonen. Öppna adressen på
+    en ny dator och skriv lösenordet.</td></tr>
+</table>
+
+<h2>Vad det kostar</h2>
+<p>Ingenting. GitHub Pages är gratis för publika repon, Apps Script ryms i Googles fria
+kvot med marginal, och lagringen är några kilobyte i din vanliga Drive. Det finns inget
+abonnemang att glömma att säga upp, och inget som slutar fungera för att en faktura inte
+gick igenom.</p>
+
+<footer>
+  <a href="./">← tillbaka till appen</a>
+</footer>
+</div>
+</body>
+</html>
