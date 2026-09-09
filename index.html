@@ -416,7 +416,7 @@ function satt(f,open){
   const blk=h.closest('.block');if(blk&&blk.dataset.blk===f)blk.dataset.open=open?'true':'false';}
 document.querySelectorAll('[data-fold]').forEach(h=>{
   h.onclick=()=>{const f=h.dataset.fold,open=h.getAttribute('aria-expanded')!=='true';
-    satt(f,open);sys.fold[f]=open;sparaSys();};});
+    satt(f,open);sys.fold[f]=open;sparaSys(false);};});
 
 /* ---------- sparning ---------- */
 let t1=null,t2=null;
@@ -687,8 +687,12 @@ async function hamtaNer(manuell){
     const j=await r.json();
     if(!j||!j.data){synkKlar=true;kvittera('synkSaved','Inget uppe än');ritaSys();return;}
     const o=JSON.parse(await dekryptera(j.data,sys.synk.fras));
-    let lokal=0;try{lokal=(JSON.parse(S.get('meta')||'{}').uppdaterad)||0;}catch(e){}
-    if((o.uppdaterad||0)<=lokal){synkKlar=true;noteraSynk('aktuell',0);kvittera('synkSaved','Redan aktuell');ritaSys();return;}
+    const lokal=lokalTid();
+    const lokalaDagar=S.keys('day:').length, fjarrDagar=Object.keys(o.dagar||{}).length;
+    // Tidsstämpeln räcker inte som ensam domare: en tom enhet ska alltid hämta,
+    // och har molnet fler dagar än enheten är enheten efter oavsett vad klockan säger.
+    const behovs=(o.uppdaterad||0)>lokal || lokalaDagar===0 || fjarrDagar>lokalaDagar;
+    if(!behovs){synkKlar=true;noteraSynk('aktuell',0);kvittera('synkSaved','Redan aktuell');ritaSys();return;}
     skrivState(o);synkKlar=true;
     noteraSynk('ner',Object.keys(o.dagar).length);
     kvittera('synkSaved','Hämtad — laddar om');
