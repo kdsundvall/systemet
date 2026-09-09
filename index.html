@@ -152,6 +152,9 @@ table.wk td.idag{background:rgba(47,90,76,.07)}
   min-height:15px;letter-spacing:.06em}
 .princip{border-left:2px solid var(--ink);padding:2px 0 2px 14px;margin:16px 0;font-size:14.5px;line-height:1.5}
 .princip b{font-weight:600}
+.synkstat{margin-top:12px;padding-top:11px;border-top:1px solid var(--line);font-size:13px;
+  color:var(--muted);line-height:1.5}
+.synkstat b{font-weight:600;color:var(--ink)}
 .logg{border:1px solid var(--line);background:#fff;border-radius:2px;padding:12px 13px;margin-top:11px}
 .logg .dt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted);
   text-transform:uppercase}
@@ -319,6 +322,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
     <button class="btn ghost" id="synkSpara" style="margin-top:12px">Spara och skicka upp</button>
     <button class="btn ghost" id="synkHamta" style="margin-top:8px">Hämta ner nu</button>
     <div class="saved" id="synkSaved"></div>
+    <div class="synkstat" id="synkStat"></div>
   </div>
 
   <div class="block">
@@ -567,10 +571,29 @@ document.getElementById('sparaOversyn').onclick=()=>{
   sparaSys();ritaOversyn();kvittera('oSaved','Sparad i loggen');};
 
 /* ---------- system ---------- */
+function noteraSynk(vad,antal){
+  S.set('synkstatus',JSON.stringify({tid:Date.now(),vad:vad,antal:antal}));}
+
 function ritaSys(){
   document.getElementById('startDatum').value=sys.start;
   document.getElementById('synkUrl').value=sys.synk.url||'';
   document.getElementById('synkFras').value=sys.synk.fras||'';
+  const el=document.getElementById('synkStat');
+  const dagar=S.keys('day:').length;
+  let st=null;try{st=JSON.parse(S.get('synkstatus')||'null');}catch(e){}
+  let rad='<b>'+dagar+'</b> '+(dagar===1?'dag':'dagar')+' finns i appen på den här enheten.';
+  if(st&&st.tid){
+    const d=new Date(st.tid);
+    const nar=VD[d.getDay()]+' '+d.getDate()+' '+MN[d.getMonth()].slice(0,3)+' '+
+      String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    const ord={ner:'Hämtade ner',upp:'Skickade upp',aktuell:'Kollade molnet — allt var redan aktuellt'}[st.vad]||st.vad;
+    rad+='<br>'+ord+(st.vad==='aktuell'?'':' <b>'+st.antal+'</b> '+(st.antal===1?'dag':'dagar'))+' · '+nar+'.';
+  }else if(sys.synk.url&&sys.synk.fras){
+    rad+='<br>Ingen synk har körts på den här enheten än.';
+  }else{
+    rad+='<br>Synken är av — allt sparas bara här.';
+  }
+  el.innerHTML=rad;
 }
 document.getElementById('sparaInst').onclick=()=>{
   const sd=document.getElementById('startDatum').value;if(sd)sys.start=sd;
@@ -650,7 +673,9 @@ async function skickaUpp(tyst){
       body:JSON.stringify({data})});
     if(!r.ok)throw new Error(r.status);
     synkKlar=true;
+    noteraSynk('upp',Object.keys(helaState().dagar).length);
     if(!tyst)kvittera('synkSaved','Uppskickat');
+    ritaSys();
   }catch(e){kvittera('synkSaved','Kunde inte skicka upp');}
 }
 async function hamtaNer(manuell){
@@ -660,11 +685,13 @@ async function hamtaNer(manuell){
   try{
     const r=await fetch(sys.synk.url,{method:'GET'});
     const j=await r.json();
-    if(!j||!j.data){synkKlar=true;kvittera('synkSaved','Inget uppe än');return;}
+    if(!j||!j.data){synkKlar=true;kvittera('synkSaved','Inget uppe än');ritaSys();return;}
     const o=JSON.parse(await dekryptera(j.data,sys.synk.fras));
     let lokal=0;try{lokal=(JSON.parse(S.get('meta')||'{}').uppdaterad)||0;}catch(e){}
-    if((o.uppdaterad||0)<=lokal){synkKlar=true;kvittera('synkSaved','Redan aktuell');return;}
-    skrivState(o);synkKlar=true;kvittera('synkSaved','Hämtad — laddar om');
+    if((o.uppdaterad||0)<=lokal){synkKlar=true;noteraSynk('aktuell',0);kvittera('synkSaved','Redan aktuell');ritaSys();return;}
+    skrivState(o);synkKlar=true;
+    noteraSynk('ner',Object.keys(o.dagar).length);
+    kvittera('synkSaved','Hämtad — laddar om');
     setTimeout(()=>location.reload(),800);
   }catch(e){kvittera('synkSaved','Kunde inte läsa — fel lösenord eller adress?');}
 }
