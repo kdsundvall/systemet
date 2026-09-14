@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Protokollet</title>
+<link rel="apple-touch-icon" href="ikon-180.png"><link rel="icon" href="ikon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EDEFF0;--ground:#1F2729;--ink:#14191A;--muted:#6E7A7C;
+  --line:#D2D8D9;--pine:#2F5A4C;--pine-lit:#5FA98E;--sol:#8A6A2C}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Familjen Grotesk",system-ui,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:60px}
+.wrap{max-width:660px;margin:0 auto;padding:0 18px}
+header{padding:30px 0 4px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted)}
+h1{font-size:clamp(34px,11vw,52px);line-height:.96;margin:12px 0 0;font-weight:700;letter-spacing:-.03em}
+h1 em{font-style:italic;font-weight:400}
+.ingress{font-size:17.5px;margin:16px 0 0;line-height:1.5}
+h2{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;margin:42px 0 0;padding-bottom:7px;border-bottom:1px solid var(--line)}
+p{margin:14px 0 0}
+
+.pass{background:#fff;border:1px solid var(--line);border-radius:3px;margin-top:14px;overflow:hidden}
+.pass-h{background:var(--ground);color:#E9EDEC;padding:13px 16px;display:flex;justify-content:space-between;
+  align-items:baseline;gap:12px}
+.pass-h .namn{font-size:18px;font-weight:600;letter-spacing:-.02em}
+.pass-h .nar{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#9AA8A6;letter-spacing:.06em;
+  text-align:right}
+.steg{padding:14px 16px;border-bottom:1px solid var(--line)}
+.steg:last-child{border-bottom:0}
+.steg-t{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.steg-t .n{font-size:16.5px;font-weight:600;letter-spacing:-.01em}
+.steg p{margin:7px 0 0;font-size:15px;line-height:1.55;color:#2C3638}
+.tagg{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  padding:3px 7px;border-radius:2px;white-space:nowrap}
+.t-stark{background:var(--pine);color:#fff}
+.t-rimlig{background:#E3E8E8;color:var(--muted)}
+.t-tunn{background:#F1E9DC;color:var(--sol)}
+
+table{border-collapse:collapse;width:100%;margin-top:16px;font-size:14.5px}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:400}
+td:first-child{width:62px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);
+  letter-spacing:.06em;text-transform:uppercase;padding-top:14px}
+td b{font-weight:600}
+td .u{display:block;color:var(--muted);font-size:13.5px;margin-top:3px;line-height:1.45}
+tr.vila td b{color:var(--muted)}
+
+.princip{border-left:2px solid var(--ink);padding:2px 0 2px 14px;margin:18px 0 0;font-size:15px;line-height:1.55}
+.princip b{font-weight:600}
+.ruta{background:#fff;border:1px solid var(--line);border-radius:3px;padding:15px 16px;margin-top:16px}
+.ruta h4{margin:0 0 6px;font-size:16px;letter-spacing:-.01em}
+.ruta p{margin:8px 0 0;font-size:15px}
+.nyckel{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--muted);
+  align-items:center}
+.nyckel span{display:flex;align-items:center;gap:6px}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-align:center;line-height:2}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Systemet · dygnet och veckan</div>
+  <h1>Protokollet<em>.</em></h1>
+  <p class="ingress">Hubermans dagsprotokoll och träningsvecka, anpassade till ditt liv —
+  BJJ, längdskidorna, lördagsgymmet med David, och promenaden du redan går.</p>
+</header>
+
+<div class="ruta">
+  <h4>Det här är inte nya vanor</h4>
+  <p>Vanorna är fortfarande tre: fötterna i golvet, toa-rutinen, neigong. Inget härifrån flyttar in
+  där utan att gå via en översyn. Det här är en <b>meny</b>, inte en kravlista — och två av punkterna
+  gör du faktiskt redan.</p>
+</div>
+
+<h2>Morgon</h2>
+
+<div class="pass">
+  <div class="pass-h"><span class="namn">Alertness och dygnsrytm</span>
+    <span class="nar">inom 30–60 min<br>efter uppvaknandet</span></div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Morgonljus, 5–30 min ute</span><span class="tagg t-stark">väl belagt</span></div>
+    <p>Direkt utomhusljus utan solglasögon. Glasögon och linser går bra. Det ger en kortisoltopp som
+    driver dagens vakenhet och startar klockan för kvällens melatonin. Mulet väder fungerar — det
+    tar bara längre tid, 15–30 minuter i stället för 5–10.</p>
+    <p><b>Du gör redan det här.</b> Din promenad på minst tio minuter är protokollet. Enda justeringen:
+    gå den tidigt, och låt bli solglasögonen.</p>
+  </div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Vänta 90–120 min med kaffet</span><span class="tagg t-rimlig">rimlig</span></div>
+    <p>Tanken är att adenosinet från natten ska hinna klinga av innan koffeinet maskerar det, så att
+    eftermiddagsdippen uteblir. Mekanismen håller. Att just fördröjningen är det som förhindrar
+    dippen är sämre belagt — men det kostar ingenting att prova i en vecka och känna efter.</p>
+  </div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Vatten före kaffe</span><span class="tagg t-tunn">tunn</span></div>
+    <p>Ungefär en liter, gärna med en nypa havssalt eller elektrolyter. Att dricka efter natten är
+    vettigt. Den exakta mängden och saltet är ett påhittat precisionsvärde utan stöd. Drick tills du
+    inte är torr. Har du högt blodtryck, hoppa saltet.</p>
+  </div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Djupt arbete 1–4 timmar efter uppvaknandet</span><span class="tagg t-rimlig">rimlig</span></div>
+    <p>Lägg det svåraste tänkandet här. Det stämmer med kortisolkurvan, men fönstret är en tumregel,
+    inte en mätning. <b>Din version:</b> arbetsblocket direkt efter frukost, utan mejl före.</p>
+  </div>
+</div>
+
+<h2>Middag</h2>
+
+<div class="pass">
+  <div class="pass-h"><span class="namn">Hålla energin uppe</span><span class="nar">11–15</span></div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Lättare lunch, protein och fett</span><span class="tagg t-rimlig">rimlig</span></div>
+    <p>Att en stor måltid gör dig seg är väl beskrivet. Att just kolhydraterna är boven är svagare —
+    portionsstorleken spelar sannolikt större roll än fördelningen.</p>
+  </div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Promenad efter lunch, 5–30 min</span><span class="tagg t-stark">väl belagt</span></div>
+    <p>Kort promenad efter måltid dämpar blodsockersvaret tydligt. Plus dagsljus mitt på dagen.
+    Den här punkten är den mest underskattade på hela sidan.</p>
+  </div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">NSDR eller tupplur under 20 min</span><span class="tagg t-rimlig">rimlig</span></div>
+    <p>Korta tupplurar återställer vakenhet — det är väl belagt. Att NSDR "fyller på dopamin" bygger
+    på en enda liten studie och ska inte tas bokstavligt. Effekten är ändå värd att använda.
+    Över 30 minuter och du vaknar grogglig.</p>
+  </div>
+</div>
+
+<h2>Kväll</h2>
+
+<div class="pass">
+  <div class="pass-h"><span class="namn">Återhämtning</span><span class="nar">från eftermiddag<br>till natt</span></div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Se solnedgången</span><span class="tagg t-rimlig">rimlig</span></div>
+    <p>Några minuter kvällsljus signalerar att dagen är slut och dämpar effekten av skärmljus senare.
+    Mekanismen är rimlig, stödet tunnare än för morgonljuset.</p>
+  </div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Kolhydraterna till middagen</span><span class="tagg t-tunn">tunn</span></div>
+    <p>Tanken är tryptofan och serotonin, alltså bättre sömn. Kedjan är lång och effekten liten i
+    praktiken. Ofarligt att prova, inget att bygga kvällen kring.</p>
+  </div>
+
+  <div class="steg">
+    <div class="steg-t"><span class="n">Släck taklamporna efter 22</span><span class="tagg t-stark">väl belagt</span></div>
+    <p>Starkt ljus uppifrån mellan 22 och 04 dämpar melatonin. Ljus lågt i rummet — golvlampor,
+    levande ljus — stör betydligt mindre än takbelysning. <b>Det här är den kväll­spak vi letade efter
+    när vi pratade om snoozandet.</b></p>
+  </div>
+</div>
+
+<h2>I stunden</h2>
+
+<div class="pass">
+  <div class="pass-h"><span class="namn">Fysiologisk suck</span><span class="nar">vid stress<br>eller oro</span></div>
+  <div class="steg">
+    <div class="steg-t"><span class="n">Två inandningar, en lång utandning</span><span class="tagg t-stark">väl belagt</span></div>
+    <p>Ett djupt andetag genom näsan, direkt följt av en kort extra inandning ovanpå — sedan en lång,
+    långsam utandning genom munnen. Ett till tre varv räcker för att sänka pulsen.</p>
+    <p>Det här är den enda punkten på sidan med en riktig randomiserad studie bakom sig: fem minuter
+    om dagen slog både andra andningstekniker och mindfulness-meditation på humör och andningsfrekvens.
+    Om du bara tar med dig en sak härifrån, ta den här.</p>
+  </div>
+</div>
+
+<h2>Träningsveckan</h2>
+<p>Hubermans grundprotokoll är tre styrkepass och tre konditionspass i veckan: ett långt lugnt, ett
+medelhårt, ett hårt. Här är det lagt så att BJJ:n bär det hårda passet och lördagsgymmet med David
+får sin plats.</p>
+
+<table>
+  <tr><th>Dag</th><th>Pass</th></tr>
+  <tr><td>Mån</td><td><b>Ben · styrka</b>
+    <span class="u">50–60 min. Knäböj eller benpress, marklyft eller rumänska, vader.
+    Tungt men inte till utmattning.</span></td></tr>
+  <tr><td>Tis</td><td><b>BJJ</b>
+    <span class="u">Bär veckans höga intensitet. Rullandet är intervallträning med teknik ovanpå —
+    du behöver inget separat HIIT-pass.</span></td></tr>
+  <tr><td>Ons</td><td><b>Överkropp · styrka</b>
+    <span class="u">45–60 min. Press, drag, axlar, nacke. Nacken är värd besväret när du rullar.</span></td></tr>
+  <tr><td>Tor</td><td><b>Jämnt tempo · 30–35 min</b>
+    <span class="u">Löpning, cykel eller thaiboxning. Ansträngande men uthålligt — du ska kunna prata
+    i korta meningar, inte i hela.</span></td></tr>
+  <tr class="vila"><td>Fre</td><td><b>Vila</b>
+    <span class="u">Rörlighet, bastu, kallbad om du vill. Ingen prestation.</span></td></tr>
+  <tr><td>Lör</td><td><b>Gym med David</b>
+    <span class="u">Armar, vader, nacke och det som blev över i veckan. Högre reps, lättare vikter.
+    Det sociala är halva poängen — det är därför det här passet blir av.</span></td></tr>
+  <tr><td>Sön</td><td><b>Långt och lugnt · 60–75 min</b>
+    <span class="u">Zon 2: du kan hålla ett samtal igång och andas genom näsan hela vägen.
+    På vintern är längdskidorna precis det här passet.</span></td></tr>
+</table>
+
+<div class="nyckel">
+  <span><span class="tagg t-stark">väl belagt</span> starkt stöd</span>
+  <span><span class="tagg t-rimlig">rimlig</span> rimlig mekanism, tunnare bevis</span>
+  <span><span class="tagg t-tunn">tunn</span> populär men svagt underbyggd</span>
+</div>
+
+<h2>Om taggarna</h2>
+<p>Jag har märkt varje punkt efter hur starkt stödet faktiskt är. Inte för att peka ut något som
+värdelöst — det mesta här är rimligt och nästan gratis att prova — utan för att du ska veta vilka
+som är värda att vara envis med. <b>Morgonljuset, promenaden efter lunch, de släckta taklamporna och
+den fysiologiska sucken</b> är de fyra som bär. Resten är trevliga tillägg.</p>
+
+<div class="princip"><b>Och det här är en meny, inte ett nytt golv.</b> Tolv punkter som blir tolv krav
+är precis den tredje kategorin vi byggde bort. Välj en. Kör den i två veckor. Ta upp den på
+översynen. Sen nästa.</div>
+
+<footer>
+  <a href="./">appen</a> · <a href="vision.html">visionen</a> · <a href="karta.html">kartan</a>
+</footer>
+</div>
+</body>
+</html>

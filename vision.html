@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visionen</title>
+<link rel="apple-touch-icon" href="ikon-180.png"><link rel="icon" href="ikon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EDEFF0;--ground:#1F2729;--ink:#14191A;--muted:#6E7A7C;
+  --line:#D2D8D9;--pine:#2F5A4C;--pine-lit:#5FA98E}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Familjen Grotesk",system-ui,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:60px}
+.wrap{max-width:660px;margin:0 auto;padding:0 18px}
+header{padding:30px 0 4px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:clamp(34px,11vw,52px);line-height:.96;margin:12px 0 0;font-weight:700;letter-spacing:-.03em}
+h1 em{font-style:italic;font-weight:400}
+.ingress{font-size:17.5px;margin:16px 0 0;line-height:1.5}
+h2{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;margin:42px 0 0;padding-bottom:7px;border-bottom:1px solid var(--line)}
+p{margin:14px 0 0}
+.stat{background:var(--ground);color:#E9EDEC;border-radius:3px;padding:16px 17px;margin-top:20px}
+.stat .n{font-family:"IBM Plex Mono",monospace;font-size:15px;letter-spacing:-.01em}
+.stat .n b{font-size:26px;font-weight:500;letter-spacing:-.02em}
+.stat .u{font-size:13.5px;color:#9AA8A6;margin-top:7px;line-height:1.45}
+
+.jobb{background:#fff;border:1px solid var(--line);border-radius:3px;padding:17px 16px;margin-top:18px}
+.jobb h3{font-size:19px;margin:0;letter-spacing:-.02em}
+.jobb .var{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.04em}
+.jobb ul{margin:12px 0 0;padding-left:18px}
+.jobb li{margin-top:6px}
+
+details{background:#fff;border:1px solid var(--line);border-radius:3px;margin-top:12px;overflow:hidden}
+details[open]{background:#fff}
+summary{list-style:none;cursor:pointer;padding:15px 16px;display:flex;align-items:baseline;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary .nr{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);flex:none;width:22px;
+  letter-spacing:.08em;padding-top:3px}
+summary .namn{flex:1;font-size:18.5px;font-weight:600;letter-spacing:-.02em;line-height:1.2}
+summary .vard{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--pine);flex:none;padding-top:5px}
+summary:focus-visible{outline:2px solid var(--pine);outline-offset:-2px}
+.varfor{padding:0 16px 16px 50px;border-top:1px solid var(--line);margin-top:2px;padding-top:14px}
+.varfor p{margin:11px 0 0;font-size:15.5px;line-height:1.6}
+.varfor p:first-child{margin-top:0}
+.varfor ul{margin:11px 0 0;padding-left:18px;font-size:15.5px}
+.varfor li{margin-top:5px}
+
+table{border-collapse:collapse;width:100%;margin-top:16px;font-size:14.5px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:400}
+td.h{text-align:right;font-family:"IBM Plex Mono",monospace}
+tr.sum td{font-weight:600;border-bottom:none;border-top:1.5px solid var(--ink)}
+.kryss{border-left:2px solid #8A4A3C;background:#F6E9E6;padding:12px 14px;margin-top:16px;border-radius:2px;
+  font-size:14.5px;line-height:1.55}
+.kryss b{font-weight:600}
+.princip{border-left:2px solid var(--ink);padding:2px 0 2px 14px;margin:18px 0 0;font-size:15px;line-height:1.55}
+.princip b{font-weight:600}
+.scen{background:#fff;border:1px solid var(--line);border-radius:3px;padding:15px 16px;margin-top:14px}
+.scen h4{margin:0 0 4px;font-size:16px;letter-spacing:-.01em}
+.scen .rad{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line);
+  font-size:14.5px}
+.scen .rad:last-child{border-bottom:0}
+.scen .rad span:last-child{font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-align:center;line-height:2}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow"><span>Systemet · destinationen</span><span id="stamp">—</span></div>
+  <h1>Visionen<em>.</em></h1>
+  <p class="ingress">Vanorna är inte poängen. Det här är poängen. Elva mål, med skälen kvar —
+  för ett mål utan sitt varför är bara ett "borde", och det första som ryker en trög morgon.</p>
+</header>
+
+<div class="stat" id="stat">
+  <div class="n">Vanorna bär dig hitåt.</div>
+  <div class="u" id="statText">Öppna appen minst en gång så räknar den här raden åt dig.</div>
+</div>
+
+<h2>Jobbet</h2>
+<p>Inte "ett jobb inom hållbarhet". De här två rollerna, konkret — det är dem du pekade på.</p>
+
+<div class="jobb">
+  <h3>Dealflow · Investment Readiness</h3>
+  <div class="var">Connect Sverige Region Väst · Springboard</div>
+  <ul>
+    <li>Söker upp och väljer ut startups och scaleups som är redo för investeringscoachning</li>
+    <li>Sitter som grindvakt: bedömer grundarna och deras affär, inte bara siffrorna</li>
+    <li>Matchar bolag mot expertpaneler som stresstestar affärsmodellen</li>
+    <li>Bygger relationer med regionala ekosystempartners, affärsänglar och VC:er</li>
+  </ul>
+</div>
+
+<div class="jobb">
+  <h3>Change Manager · Sustainability &amp; Business</h3>
+  <div class="var">Where is my pony</div>
+  <ul>
+    <li>Översätter komplexa hållbarhetsfrågor till affärsdrivna strategier och kommunikation</li>
+    <li>Faciliterar workshops som bygger psykologisk trygghet och innovationskraft</li>
+    <li>Gör hållbarhet till konkurrensfördel i varumärke och kommunikation</li>
+  </ul>
+</div>
+
+<p>Lägg dem bredvid varandra och yrket framträder: <b>du bedömer människor och affärer,
+och du står i rummet och håller processen.</b> Bådadera bygger på omdöme och närvaro,
+inte på titlar. Det är samma sak du vill göra genom Landmark, mansgruppen och workshops —
+bara med lön.</p>
+
+<p>Och det löser spänningen vi pratade om tidigt. Personal branding kändes fel därför att
+det är att sälja sig själv som produkt. Det här är något annat: att bli känd för ett
+omdöme. Den sortens rykte byggs av att man visar hur man tänker, inte av att man
+paketerar sig.</p>
+
+<h2>De elva målen</h2>
+<p>Dina ord, oredigerade. Fäll ut det du behöver höra idag.</p>
+
+<details open>
+  <summary><span class="nr">01</span><span class="namn">Äga ett hus</span><span class="vard">Fristad</span></summary>
+  <div class="varfor">
+    <p>För här finns det plats för mamma och pappa att ha ett eget gästrum om dom vill.</p>
+    <p>För att jag vill ha kontakt med mina vänner i norr, med skogen, vintern, naturen och djuren.
+    Min syster och hennes familj. För att jag vill vakna upp i mörkret och åka längdskidor på morgonen.
+    För att jag älskar att se snöflingor falla sakta. För att jag älskar tystnaden och stillheten.
+    För att jag älskar den lilla gemenskapen, den självklara tajta kretsen. För att jag vill gå genom
+    tomma gator hem på kvällen. För att jag älskar att se hur staden blommar upp på sommaren och
+    folkfesten sker bokstavligen vart du än går.</p>
+    <p>För att jag älskar att höra krasande snö under mina fötter under en stjärntäckt himmel.
+    För att jag älskar att leva lokalt. För att jag älskar att höra hur skridsko-skenan slirar över
+    den djupblåa isen vid södrahamnen.</p>
+    <p>För att jag älskar att ta skidorna ut i skogen, trampa upp en yta, göra en eld och i den dova
+    tystnaden höra elden spraka.</p>
+    <p>För att jag älskar sanningen över att jag inte behöver något mer än det jag har på mig när jag
+    går utanför dörren en sommardag när polarn tutar utanför med volvon. När jag hoppar i sjön vi
+    precis hittade för att vi var ute och sprang tillsammans i skogen. För att jag drunknar i det
+    enkla. För att närheten till allt ger vardagen ett lugn, en trygghet, en vagga.</p>
+    <p>För att de flesta går mer täckbyxor på stan och på fik. För att det viktiga är viktigt.
+    För att jag älskar mina vänner, David, Richard, Samme, Jacke, Emil, Jossan.</p>
+    <p>För att äventyret börjar med att vi träffas och sen ser vart vi hamnar, snarare än att vi
+    bestämmer vart vi ska hamna och sen ses.</p>
+    <p>För att jag vill låta mina barn växa upp i skogen, bland djuren, naturen och snön. För att jag
+    vill viska i bilen på morgonen påväg till snowboardbacken med barnen i baksätet.</p>
+    <p>För att jag blir glad av att gå på mataffären och känna igen människor. För att närliggande
+    utflykter kan ske oplanerade, det finns inget som splittrar oss. För att vi kan åka ut med en
+    sovsäck och en termos och se vart vi hamnar. För att vi kan vakna upp i Råneå efter att ha sovit
+    i en stuga som inte går att boka, bestämma oss för att köra en landsväg hem, dö av utsikten,
+    leva i äventyret av att sitta tillsammans i bilen.</p>
+    <p>För att norrbotten är den idyllen du tror att det är.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="nr">02</span><span class="namn">Familj och barn med Siri</span><span class="vard">Familj</span></summary>
+  <div class="varfor">
+    <p>Tanken att dom springer i vardagsrummet är ljuvligt. Tanken att mamma och pappa och Siris
+    föräldrar kommer på besök och får leva med barnbarnen är ju underbart.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="nr">03</span><span class="namn">Arbeta med något meningsfullt</span><span class="vard">Karriär</span></summary>
+  <div class="varfor">
+    <p>Ett jobb där de arbetar mot en mer regenerativ värld. Där jag kan vara mig själv. Högt till tak.
+    Fun. Open minded. Där vi leker under arbetstid. Nära där jag bor.</p>
+    <p>Drömmen är att kunna jobba med något regenerativt — för att det är det vi behöver för djur,
+    natur och liv.</p>
+    <p>För att jag vill använda mitt liv till att vara till service för transformation. Genom Landmark.
+    Och att hålla föreläsningar och workshops på företag.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="nr">04</span><span class="namn">Regelbunden kontakt med vänner</span><span class="vard">Vänner</span></summary>
+  <div class="varfor">
+    <p>Är det idolfinal eller VM-final, ja men då kan man traska över till polarn och kika tillsammans.
+    Är det lite vardagsfest med en onsdagsgrill för att man vill fira att projektet på jobbet är
+    avslutat, ja då bjuder man över några vänner. Är det någon som fyller år, ja då firar vi.</p>
+    <p>Jag och David gymmar på samma ställe varje lördagmorgon. Jag, Rille, Emil, Jacke och David
+    bastar en gång i månaden. En gång per år reser vi tillsammans, till exempel Grekland. Jag och
+    Rille har var sin van som vi drar och åker bräda och surfar med en långhelg då och då.</p>
+    <p>Någon som behöver hjälp att sätta ihop en möbel eller flytta? Ja då kommer vi över, jag bär,
+    Siri bjuder på fika. Vi tar med oss ungen på ryggen när vi drar ut över vårvinterns soliga isar.</p>
+    <p>Barndomsvännerna känner mig. Inget som är konstigt där. Dom är glada för min skull.
+    Här kan vi räkna med varandra.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="nr">05</span><span class="namn">Vardag med rymd</span><span class="vard">Tid</span></summary>
+  <div class="varfor">
+    <p>Rymd att skapa events med vänner och för vänner. Att träna roliga sporter som BJJ och
+    thaiboxning. Att driva mansgrupp eller hålla på med Landmark. Det ger mig mening. Det ska finnas
+    plats att man lugnt kan cykla, gå eller ta bilen hem, och sen dra ut med längdskidorna.</p>
+    <ul>
+      <li>Jamma med Ludvig och Björn</li>
+      <li>Mansgrupp</li>
+      <li>Fest och grill hos vänner</li>
+      <li>Träna och tävla i BJJ</li>
+      <li>Bygga tinyhouse hos bror</li>
+      <li>Hänga med Ronja</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary><span class="nr">06</span><span class="namn">Leva nära naturen</span><span class="vard">Balans</span></summary>
+  <div class="varfor"><p>Frid. Naturen runt en dygnet runt, inte som utflykt utan som granne.</p></div>
+</details>
+
+<details>
+  <summary><span class="nr">07</span><span class="namn">Leva i en 10-minutersstad</span><span class="vard">Närhet</span></summary>
+  <div class="varfor"><p>Röra sig med enkelhet. Allt inom räckhåll, inget som splittrar dagen.</p></div>
+</details>
+
+<details>
+  <summary><span class="nr">08</span><span class="namn">Tjäna såpass att jag kan leva i ro</span><span class="vard">Pengar</span></summary>
+  <div class="varfor">
+    <p>Jag kan köpa det jag vill på Ica. Jag kan äta ute när jag vill utan att bli orolig för ekonomin.
+    Jag har råd att spara och investera. Jag har råd att hyra en bil om jag behöver göra det över en
+    helg för ett äventyr i Italien. Det är inga problem. Råd med hus, sport, bil, barn, resor,
+    investeringar. Thats it.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="nr">09</span><span class="namn">Aktivt sexliv</span><span class="vard">Glädje</span></summary>
+  <div class="varfor">
+    <p>Glädje och äventyr tillsammans med Siri. Testa tantrafestival. Testa playparties.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="nr">10</span><span class="namn">Äga en bra bil</span><span class="vard">Frihet</span></summary>
+  <div class="varfor">
+    <p>Volvo XC60. En bil som håller och klarar vintern, med rimlig driftkostnad. Hybrid.
+    Går att åka snowboard med.</p>
+  </div>
+</details>
+
+<details>
+  <summary><span class="nr">11</span><span class="namn">Äventyr med familjen</span><span class="vard">Familj</span></summary>
+  <div class="varfor">
+    <p>Vipassana. Levande föda-gården. Ceremonier. Breathwork med mamma. Kul.</p>
+  </div>
+</details>
+
+<h2>Siffrorna</h2>
+<p>Gemensam lön 80 000 före skatt — 50 000 plus 30 000 — vilket blir <b>56 000 efter skatt</b>.
+Så här fördelas de.</p>
+
+<table>
+  <tr><th>Utgift</th><th style="text-align:right">Per månad</th></tr>
+  <tr><td>Hus inklusive driftkostnad</td><td class="h">20 000</td></tr>
+  <tr><td>Spar och investering</td><td class="h">15 000</td></tr>
+  <tr><td>Övrigt</td><td class="h">6 000</td></tr>
+  <tr><td>Bil</td><td class="h">5 000</td></tr>
+  <tr><td>Resor</td><td class="h">5 000</td></tr>
+  <tr><td>Mat</td><td class="h">3 000</td></tr>
+  <tr><td>Gym och träning</td><td class="h">2 000</td></tr>
+  <tr class="sum"><td>Summa</td><td class="h">56 000</td></tr>
+</table>
+
+<p>Den går jämnt ut på kronan. Tre saker skaver dock när man räknar efter.</p>
+
+<div class="kryss">
+  <b>Resebudgeten täcker inte reseplanen.</b> Din lista — jul, skidsemester, två bilresor till
+  Göteborg, en flygresa på våren, en sommarsemester — landar på <b>66 500 kr</b>. Posten Resor ger
+  60 000 om året. Det fattas 6 500. Antingen 5 550 i månaden i stället för 5 000, eller en resa mindre.
+</div>
+
+<div class="kryss">
+  <b>Kontantinsatsen i scenario 1 går inte ihop.</b> Behovet är 445 000 efter päronens 400 000.
+  Ditt sparande 20 000 och Siris 6 250 i 16 månader ger 420 000. Det saknas <b>25 000</b>, alltså
+  ungefär en månad till — eller 1 600 kr mer i månaden.
+</div>
+
+<div class="kryss">
+  <b>Budgeten har noll marginal.</b> Varenda krona av de 56 000 är fördelad. En tandläkarräkning
+  eller en vinterdäcksbyte får inte plats. Posten Spar på 15 000 är i praktiken din buffert, vilket
+  betyder att sparandet är det som faktiskt pausas när något händer. Värt att veta i förväg.
+</div>
+
+<div class="scen">
+  <h4>Scenario 1 · huset på 5,6 Mkr</h4>
+  <div class="rad"><span>Lån vid 80 000 i gemensam lön</span><span>4,74 Mkr</span></div>
+  <div class="rad"><span>Kontantinsats 15 %</span><span>845 000</span></div>
+  <div class="rad"><span>Varav päron</span><span>400 000</span></div>
+  <div class="rad"><span>Eget, på 16 månader</span><span>445 000</span></div>
+</div>
+
+<div class="scen">
+  <h4>Scenario 2 · huset på 4 Mkr</h4>
+  <div class="rad"><span>Kontantinsats 15 %</span><span>600 000</span></div>
+  <div class="rad"><span>Lån</span><span>3,4 Mkr</span></div>
+  <div class="rad"><span>Vid 3 % ränta, 2 % amortering</span><span>14 200 kr/mån</span></div>
+  <div class="rad"><span>Vid 4 % ränta</span><span>17 000 kr/mån</span></div>
+  <div class="rad"><span>Vid 5 % ränta</span><span>19 800 kr/mån</span></div>
+</div>
+
+<p>Din uppskattning på 16 500 ligger mitt i spannet, alltså runt 4 % ränta. Det är rimligt att
+räkna med — men lägg märke till att huskostnaden i budgeten är 20 000, och att scenario 2 ryms
+inom det även vid 5 %. <b>Scenario 2 är det som håller när räntan rör sig.</b> Scenario 1 gör det
+inte.</p>
+
+<h2>Vägen dit</h2>
+<div class="princip"><b>Resiliens är inte att härda ut.</b> Det är att ändamålsenligt kunna tillåta
+obehag för att komma vidare och göra det som känns värdefullt. Den bygger på att både vara i
+stunden och ha formulerat långsiktiga livsvärden och mål. <span style="color:var(--muted)">
+— Rikard Wicksell, KI</span></div>
+
+<p>Det är därför den här sidan finns. Vanorna på framsidan är stunden. Den här sidan är målen.
+Resiliens är det som uppstår när båda finns samtidigt — och det är precis vad som saknas en morgon
+när alarmet ringer och du bara har det ena.</p>
+
+<div class="princip"><b>Tänk inte allt eller inget.</b> Utveckling sker stegvis. Planera en snitslad
+bana med flera stationer. Visa dig själv uppskattning när du gör något som känns svårt.</div>
+
+<div class="princip"><b>Och om du inte når ett mål:</b> fundera på det du strävade efter.
+Är det verkligen viktigt för dig, eller är det bara något du "borde"? De elva ovan har alla ett
+varför. Det som inte har det hör inte hemma på listan.</div>
+
+<footer>
+  <a href="./">appen</a> · <a href="protokoll.html">protokollet</a> · <a href="karta.html">kartan</a>
+</footer>
+</div>
+
+<script>
+// Läser vane-appens data — samma adress, samma lagring. Rör ingenting.
+(function(){
+  try{
+    const P='enkel:';
+    const sys=JSON.parse(localStorage.getItem(P+'system')||'null');
+    const dagar=[];
+    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);
+      if(k&&k.indexOf(P+'day:')===0)dagar.push(k.slice((P+'day:').length));}
+    if(!sys&&!dagar.length)return;
+    const nu=new Date();
+    const nk=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const mellan=(a,b)=>Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/86400000);
+    const bitar=[];
+    if(sys&&sys.start){const d=mellan(sys.start,nk(nu))+1;if(d>0)bitar.push('<b>'+d+'</b> dagar in');}
+    let klara=0;
+    dagar.forEach(d=>{try{const o=JSON.parse(localStorage.getItem(P+'day:'+d));
+      if(o&&o.toa)klara++;}catch(e){}});
+    if(klara)bitar.push('<b>'+klara+'</b> dagar med vanorna gjorda');
+    if(sys&&sys.porrSenast){const p=mellan(sys.porrSenast,nk(nu));
+      if(p>=0)bitar.push('<b>'+p+'</b> dagar utan porr');}
+    if(!bitar.length)return;
+    document.getElementById('stat').querySelector('.n').innerHTML=bitar.join(' · ');
+    document.getElementById('statText').textContent='Det är härifrån du går. Sidan nedan är dit.';
+    document.getElementById('stamp').textContent=nk(nu);
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
