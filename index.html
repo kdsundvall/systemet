@@ -652,11 +652,13 @@ let synkTimer=null,synkKlar=false;
 function synkaSenare(){
   if(!sys.synk.url||!sys.synk.fras||!synkKlar)return;
   clearTimeout(synkTimer);synkTimer=setTimeout(()=>skickaUpp(true),4000);}
-async function remoteTid(){
+async function fjarrInfo(){
   try{const j=await fetch(sys.synk.url).then(x=>x.json());
-    if(!j||!j.data)return 0;
-    return (JSON.parse(await dekryptera(j.data,sys.synk.fras)).uppdaterad)||0;
-  }catch(e){return -1;}}
+    if(!j||!j.data)return {tid:0,dagar:0};
+    const o=JSON.parse(await dekryptera(j.data,sys.synk.fras));
+    return {tid:o.uppdaterad||0,dagar:Object.keys(o.dagar||{}).length};
+  }catch(e){return {tid:-1,dagar:-1};}}
+async function remoteTid(){return (await fjarrInfo()).tid;}
 function lokalTid(){try{return (JSON.parse(S.get('meta')||'{}').uppdaterad)||0;}catch(e){return 0;}}
 
 function lasSynkFalt(){
@@ -674,13 +676,20 @@ async function skickaUpp(tyst){
   if(!sys.synk.url||!sys.synk.fras){if(!tyst)synkSaknas();return;}
   if(!window.crypto||!crypto.subtle){if(!tyst)kvittera('synkSaved','Kryptering kräver https');return;}
   try{
-    const rt=await remoteTid();
+    const fjarr=await fjarrInfo(), rt=fjarr.tid;
+    const minaDagar=S.keys('day:').length;
+    // Tidsstämpeln ensam räcker inte. En enhet med färre dagar än molnet är nästan
+    // alltid en gammal flik som ligger kvar öppen — den får aldrig krympa molnkopian.
+    const krymper=fjarr.dagar>minaDagar;
     if(tyst){
-      // en tyst synk skriver aldrig över något nyare — då är den andra enheten före
       if(rt>lokalTid()){kvittera('synkSaved','Nyare data finns uppe — tryck Hämta ner nu');return;}
+      if(krymper){kvittera('synkSaved','Molnet har '+fjarr.dagar+' dagar, den här enheten '+minaDagar+
+        ' — skickar inte upp');ritaSys();return;}
     }else{
       if(rt===-1&&!confirm('Kunde inte läsa det som ligger uppe — fel lösenord, eller inget uppe än. Skriva över det?'))return;
       if(rt>lokalTid()&&!confirm('Det som ligger uppe är nyare än det här. Skriva över det?'))return;
+      if(krymper&&!confirm('Molnkopian har '+fjarr.dagar+' dagar, den här enheten har '+minaDagar+
+        '. Skickar du upp försvinner mellanskillnaden. Fortsätta?'))return;
     }
     const data=await kryptera(JSON.stringify(helaState()),sys.synk.fras);
     const r=await fetch(sys.synk.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
