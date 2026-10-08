@@ -27,7 +27,8 @@ Det fungerar utan Claude, utan internet, och utan att någon annan äger datan.
 Fliken **Träning** är en Starting Strength-logg: pass A/B, uppvärmning, skivor per sida,
 vilotimer som startar när du bockar av ett set, och nya vikter när du avslutar passet.
 
-- Reglerna och logiken ligger överst i `trana.js`, stilen i `trana.css`.
+- Reglerna och logiken ligger överst i `trana.js`, stilen i `trana.css`. Fliken har
+  medvetet en egen blå stil, skild från resten av Systemet.
 - Datan sparas under `enkel:trana` och följer med i synken och i JSON-backupen.
   Vid synk vinner den version av träningen som ändrades senast.
 - **`trana.html`** är samma träningsdel som egen sida, utan vanorna. Det är den länken

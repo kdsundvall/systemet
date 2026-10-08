@@ -32,6 +32,8 @@ nav button{flex:1;background:none;border:0;padding:12px 2px;cursor:pointer;font-
   font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
   border-bottom:2px solid transparent;margin-bottom:-1px}
 nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+body{transition:background-color .2s ease}
+body.flik-trana nav button[aria-selected="true"]{color:#1E54C2;border-bottom-color:#1E54C2}
 nav button:focus-visible{outline:2px solid var(--pine);outline-offset:-2px}
 
 .golv{background:var(--ground);color:#E9EDEC;margin:20px 0 0;padding:20px 18px 18px;border-radius:3px;
@@ -168,7 +170,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
   font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-align:center;padding-bottom:10px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-<link rel="stylesheet" href="trana.css?v=2">
+<link rel="stylesheet" href="trana.css?v=3">
 </head>
 <body>
 <div class="wrap">
@@ -356,7 +358,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
 <a href="karta.html" style="color:var(--muted)">kartan</a></footer>
 </div>
 
-<script src="trana.js?v=2"></script>
+<script src="trana.js?v=3"></script>
 <script>
 /* ---------- lagring ---------- */
 const mem={},NYCK='enkel:';
@@ -537,6 +539,7 @@ document.querySelectorAll('nav button').forEach(b=>{
     b.setAttribute('aria-selected','true');
     ['idag','trana','vecka','oversyn','sys'].forEach(t=>
       document.getElementById('tab-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+    document.body.classList.toggle('flik-trana',b.dataset.tab==='trana');   // Träning har egen färg
     if(b.dataset.tab==='trana'&&window.Trana)Trana.rita();
     if(b.dataset.tab==='vecka')ritaVecka();
     if(b.dataset.tab==='oversyn')ritaOversyn();

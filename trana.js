@@ -79,10 +79,6 @@ const pad=n=>String(n).padStart(2,'0');
 const idagISO=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
 const VD=['sön','mån','tis','ons','tor','fre','lör'];
 const MN=['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
-function datumText(iso,kort){
-  const d=new Date(iso+'T12:00:00');if(isNaN(d))return '';
-  return VD[d.getDay()]+' '+d.getDate()+' '+(kort?MN[d.getMonth()].slice(0,3):MN[d.getMonth()]);
-}
 
 /* ---------- data ---------- */
 // Allt som läses in (lagring, backup, länk) går genom normalisera, så trasig eller
@@ -131,35 +127,41 @@ function lasLagrat(){try{const t=opt.las();return t?normalisera(JSON.parse(t)):n
 function spara(){state.updatedAt=Date.now();try{opt.skriv(JSON.stringify(state));}catch(e){}}
 
 /* ---------- vyer ---------- */
-const PL={25:[9,40],20:[8,40],15:[7,36],10:[6,30],5:[5,22],2.5:[4,17],1.25:[3,13]};
+// Skivorna ritas i tävlingsfärger: 25 röd, 20 blå, 15 gul, 10 grön, 5 vit.
+const PL={25:[10,54,'--tr-p25'],20:[9,54,'--tr-p20'],15:[8,48,'--tr-p15'],10:[7,42,'--tr-p10'],5:[6,32,'--tr-p5'],2.5:[5,26,'--tr-p2'],1.25:[4,22,'--tr-p1']};
 function stangSvg(lista){
-  const cy=22;let x=27,s='';
+  const cy=30;let x=41,s='';
   for(const p of lista){
     const d=PL[p];
-    s+='<rect x="'+x+'" y="'+(cy-d[1]/2)+'" width="'+d[0]+'" height="'+d[1]+'" rx="1" style="fill:'+(p>=10?'var(--tr-ground)':'var(--tr-plate-light)')+'"/>';
-    x+=d[0]+1.2;
+    s+='<rect x="'+x+'" y="'+(cy-d[1]/2)+'" width="'+d[0]+'" height="'+d[1]+'" rx="1.5" style="fill:var('+d[2]+');stroke:var(--tr-plate-edge);stroke-width:1"/>';
+    x+=d[0]+1.5;
   }
   const lbl=lista.length?'Skivor per sida: '+lista.map(fmt).join(', ')+' kg':'Tom stång';
-  return '<svg class="tr-stang" viewBox="0 0 112 44" role="img" aria-label="'+lbl+'">'+
-    '<rect x="0" y="'+(cy-1.5)+'" width="22" height="3" style="fill:var(--tr-steel)"/>'+
-    '<rect x="22" y="'+(cy-7)+'" width="4" height="14" style="fill:var(--tr-steel)"/>'+
-    '<rect x="26" y="'+(cy-3)+'" width="86" height="6" style="fill:var(--tr-steel)"/>'+s+'</svg>';
+  return '<svg class="tr-bar" viewBox="26 0 112 60" role="img" aria-label="'+lbl+'">'+
+    '<rect x="26" y="'+(cy-2)+'" width="9" height="4" rx="1" style="fill:var(--tr-steel)"/>'+
+    '<rect x="35" y="'+(cy-9)+'" width="5" height="18" rx="1" style="fill:var(--tr-steel)"/>'+
+    '<rect x="40" y="'+(cy-4)+'" width="108" height="8" rx="2" style="fill:var(--tr-steel)"/>'+s+'</svg>';
 }
 const skivText=l=>l.map(fmt).join(' + ');
+const VDL=['söndag','måndag','tisdag','onsdag','torsdag','fredag','lördag'];
+function langtDatum(iso){
+  const d=new Date(iso+'T12:00:00');if(isNaN(d))return '';
+  const t=VDL[d.getDay()]+' '+d.getDate()+' '+MN[d.getMonth()];
+  return t[0].toUpperCase()+t.slice(1);
+}
 
 function vyStart(){
-  const f=id=>'<label class="tr-field" for="tr-s-'+id+'"><span class="lbl">'+LYFT[id].namn+'</span>'+
-    '<input id="tr-s-'+id+'" type="text" inputmode="decimal" placeholder="kg" autocomplete="off"></label>';
-  return '<div class="tr-golv"><div class="tr-golv-lbl"><span>Träning</span><span>Starting Strength</span></div>'+
-    '<h2>Kom igång</h2>'+
-    '<div class="tr-golv-status" style="margin-top:14px">Fyll i dina arbetsvikter. Lämna tomt där du inte vet, så hittar du vikten under första passet.</div></div>'+
-    '<form class="tr-block" id="tr-start" style="padding-bottom:16px">'+
-      '<div class="tr-blk-h"><span class="tr-t">Startvikter</span><span class="tr-note">kg, med stång</span></div>'+
+  const f=id=>'<label class="tr-field" for="tr-s-'+id+'"><span>'+LYFT[id].namn+'</span>'+
+    '<input id="tr-s-'+id+'" type="text" inputmode="decimal" placeholder="kg" autocomplete="off"><small>kg</small></label>';
+  return '<header class="tr-top"><div class="tr-eyebrow"><span>Starting Strength</span></div>'+
+      '<h2 class="tr-h">Kom igång</h2>'+
+      '<p class="tr-sub">Ange dina arbetsvikter. Lämna tomt där du inte vet, så hittar du vikten under första passet.</p></header>'+
+    '<form id="tr-start" class="tr-setup">'+
       ['squat','press','bench','deadlift'].map(f).join('')+
-      '<div class="tr-field"><span class="lbl">Första pass</span><span class="tr-pair">'+
+      '<div class="tr-pairrow"><span>Första pass</span><div class="tr-pair">'+
         '<button type="button" data-tr="np" data-v="A" aria-pressed="'+(startPass==='A')+'">A</button>'+
-        '<button type="button" data-tr="np" data-v="B" aria-pressed="'+(startPass==='B')+'">B</button></span></div>'+
-      '<button class="tr-btn" type="submit">Spara och börja</button>'+
+        '<button type="button" data-tr="np" data-v="B" aria-pressed="'+(startPass==='B')+'">B</button></div></div>'+
+      '<button class="tr-btn primary" type="submit">Spara och börja</button>'+
     '</form>'+(opt.backup?vyBackup():'');
 }
 
@@ -177,49 +179,50 @@ function vyPass(){
   const c=state.current,pass=c?c.pass:state.nextPass,ids=PASS[pass],annan=pass==='A'?'B':'A';
   const datum=c?c.date:idagISO(),gammalt=c&&c.date!==idagISO();
   const kvar=kvarSet(pass);
-  let h='<div class="tr-golv"><div class="tr-golv-lbl"><span>'+(gammalt?'Ej avslutat pass':'Dagens pass')+'</span><span>'+datumText(datum)+'</span></div>'+
-    '<h2>Pass '+pass+'</h2><ul class="tr-golv-lyft">'+ids.map(id=>{
-      const w=state.lifts[id].w;
-      return '<li><span>'+LYFT[id].namn+'</span><b>'+(w==null?'<span class="saknas">startvikt saknas</span>':fmt(w)+' kg')+'</b></li>';}).join('')+'</ul>'+
-    '<div class="tr-golv-status'+(kvar?'':' klart')+'">'+(kvar?(kvar+' arbetsset kvar. Vilotimern startar när du bockar av ett set.'):'Alla set är loggade. Avsluta passet längst ner.')+'</div>'+
-    (c?'':'<button class="tr-lank" type="button" data-tr="byt">Kör pass '+annan+' istället</button>')+'</div>';
+  let h='<header class="tr-top"><div class="tr-eyebrow"><span>Starting Strength</span><span>'+(gammalt?'Ej avslutat pass':'')+'</span></div>'+
+    '<h2 class="tr-h">Pass '+pass+'</h2>'+
+    '<p class="tr-sub">'+langtDatum(datum)+' · '+ids.map(i=>LYFT[i].namn.toLowerCase()).join(', ')+'</p>'+
+    (c?'':'<button class="tr-link" type="button" data-tr="byt">Kör pass '+annan+' istället</button>')+'</header>';
   if(state.summary)h+=vySammanfattning();
   for(const id of ids)h+=vyLyft(id);
-  h+='<button class="tr-btn" type="button" data-tr="avsluta"'+(kvar?' disabled':'')+'>Avsluta pass '+pass+'</button>'+
-    '<p class="tr-hint">'+(kvar?'Knappen går att trycka när alla arbetsset är loggade. Blev det färre reps? Tryck − innan du bockar av.':'Nya vikter räknas ut när du avslutar.')+'</p>'+
-    (c?'<button class="tr-reset" type="button" data-tr="nollstall">Nollställ passet</button>':'');
+  h+='<div class="tr-finish"><button class="tr-btn primary" type="button" data-tr="avsluta"'+(kvar?' disabled':'')+'>Avsluta pass '+pass+'</button>'+
+    '<p class="tr-hint">'+(kvar?kvar+' arbetsset kvar att logga. Tryck ✓ när setet är klart, eller sänk antalet reps först om det blev färre.'
+      :'Alla arbetsset är loggade. Nya vikter räknas ut när du avslutar.')+'</p>'+
+    (c?'<button class="tr-link" type="button" data-tr="nollstall">Nollställ passet</button>':'')+'</div>';
   h+=vyHistorik()+vyRegler()+(opt.backup?vyBackup():'');
   return h;
 }
 
 function vySammanfattning(){
   const s=state.summary;
-  return '<div class="tr-fira" role="status"><h3>Pass '+s.pass+' klart</h3><ul>'+s.items.map(it=>
+  return '<div class="tr-summary" role="status"><h3>Pass '+s.pass+' klart</h3><ul>'+s.items.map(it=>
     '<li><span>'+LYFT[it.id].namn+'</span><b>'+fmt(it.from)+' → '+fmt(it.to)+' kg</b><small>'+esc(it.note)+'</small></li>').join('')+
-    '</ul><button class="tr-lank" type="button" data-tr="stang">Stäng</button></div>';
+    '</ul><button class="tr-link" type="button" data-tr="stang">Stäng</button></div>';
 }
 
 function vyLyft(id){
   const L=LYFT[id],w=state.lifts[id].w,c=state.current;
   const s=c&&c.sets[id]?c.sets[id]:{warm:[],work:Array(L.set).fill(null)};
-  let h='<section class="tr-block" id="tr-'+id+'"><div class="tr-blk-h"><span class="tr-t">'+L.namn+'</span>'+
-    '<span class="tr-note">'+(L.amrap?'3 × 5 · sista setet 5+':'1 × 5 · alltid 5 reps')+'</span></div>';
+  let h='<section class="tr-lift" id="tr-'+id+'"><div class="tr-lift-head"><h2>'+L.namn+'</h2>'+
+    '<span class="tr-scheme">'+(L.amrap?'3 × 5, sista setet 5+':'1 × 5, alltid 5 reps')+'</span></div>';
   if(w==null){
-    return h+'<div class="tr-tom"><p>Kör tom stång × 5 och öka ungefär 5 kg per set tills stången går tydligt långsammare. Den vikten blir din arbetsvikt.</p>'+
-      '<button class="tr-btn ghost" type="button" data-tr="startvikt" data-id="'+id+'">Börja på tom stång (20 kg)</button></div></section>';
+    return h+'<div class="tr-nostart"><p><b>Startvikt saknas.</b> Kör tom stång × 5 och öka cirka 5 kg per set tills stången går tydligt långsammare. Den vikten blir din arbetsvikt.</p>'+
+      '<button class="tr-btn" type="button" data-tr="startvikt" data-id="'+id+'">Sätt startvikt</button></div></section>';
   }
-  const sk=skivorPerSida(w),last=s.work.some(v=>v!=null);
-  h+='<div class="tr-last"><div class="tr-kg">'+fmt(w)+'<small>kg</small></div>'+
-    '<div class="tr-adj"><button type="button" data-tr="vned" data-id="'+id+'"'+(last?' disabled':'')+' aria-label="Sänk '+L.namn.toLowerCase()+' 2,5 kg">−</button>'+
-    '<button type="button" data-tr="vupp" data-id="'+id+'"'+(last?' disabled':'')+' aria-label="Höj '+L.namn.toLowerCase()+' 2,5 kg">+</button></div></div>'+
-    '<div class="tr-sida"><span>'+(sk.lista.length?'Per sida <b>'+skivText(sk.lista)+'</b>':'Tom stång, inga skivor')+(sk.exakt?'':' · går inte att lasta exakt')+'</span>'+stangSvg(sk.lista)+'</div>'+
-    '<ol class="tr-sets">';
+  const sk=skivorPerSida(w),last=s.work.some(v=>v!=null),namn=L.namn.toLowerCase();
+  h+='<div class="tr-load"><div class="tr-weight">'+
+      '<button class="tr-adj" type="button" data-tr="vned" data-id="'+id+'"'+(last?' disabled':'')+' aria-label="Sänk '+namn+' 2,5 kg">−</button>'+
+      '<span class="tr-kg">'+fmt(w)+'<small>kg</small></span>'+
+      '<button class="tr-adj" type="button" data-tr="vupp" data-id="'+id+'"'+(last?' disabled':'')+' aria-label="Höj '+namn+' 2,5 kg">+</button></div>'+
+    stangSvg(sk.lista)+
+    '<p class="tr-perside">'+(sk.lista.length?'Per sida: <b>'+skivText(sk.lista)+'</b>':'Tom stång, inga skivor')+(sk.exakt?'':' (går inte att lasta exakt)')+'</p>'+
+    '</div><ol class="tr-sets">';
   uppvarmning(id,w).forEach((x,i)=>{
     const gj=!!s.warm[i],pl=skivorPerSida(x.w).lista;
-    h+='<li class="tr-set uppv'+(gj?' gjord':'')+'"><span class="tr-tag">Uppv</span>'+
-      '<span class="tr-v"><b>'+fmt(x.w)+' kg</b><small>'+(pl.length?skivText(pl)+' per sida':'tom stång')+'</small></span>'+
-      '<span class="tr-r">× '+x.r+'</span>'+
-      '<button class="tr-chk" type="button" data-tr="uppv" data-id="'+id+'" data-i="'+i+'" aria-pressed="'+gj+'" aria-label="Uppvärmning '+(i+1)+', '+fmt(x.w)+' kg, klar"></button></li>';
+    h+='<li class="tr-set warm'+(gj?' done':'')+'"><span class="tr-tag">Uppv</span>'+
+      '<span class="tr-sw"><b>'+fmt(x.w)+' kg</b><small>'+(pl.length?skivText(pl)+' per sida':'tom stång')+'</small></span>'+
+      '<span class="tr-rp">× '+x.r+'</span>'+
+      '<button class="tr-chk" type="button" data-tr="uppv" data-id="'+id+'" data-i="'+i+'" aria-pressed="'+gj+'" aria-label="Uppvärmning '+(i+1)+', '+fmt(x.w)+' kg, klar">✓</button></li>';
   });
   for(let i=0;i<L.set;i++){
     const v=s.work[i],loggad=v!=null,amrap=L.amrap&&i===L.set-1,k=id+':'+i;
@@ -227,43 +230,45 @@ function vyLyft(id){
     const klass=loggad?(v>=5?' ok':' fail'):'';
     const under=amrap?'så många du säkert klarar':(L.amrap?'5 reps':'exakt 5 reps');
     const mitt=loggad
-      ?'<span class="tr-r">'+v+' reps'+(v<5?' · fail':'')+'</span>'
+      ?'<span class="tr-rp tr-res">'+v+' reps'+(v<5?' · fail':'')+'</span>'
       :'<span class="tr-step"><button type="button" data-tr="minus" data-k="'+k+'" aria-label="Färre reps">−</button>'+
         '<output aria-live="polite">'+d+'</output><button type="button" data-tr="plus" data-k="'+k+'" aria-label="Fler reps">+</button></span>';
-    h+='<li class="tr-set arb'+klass+'"><span class="tr-tag">'+lbl+(amrap?'<em>5+</em>':'')+'</span>'+
-      '<span class="tr-v"><b>'+fmt(w)+' kg</b><small>'+under+'</small></span>'+mitt+
-      '<button class="tr-chk arb" type="button" data-tr="logga" data-id="'+id+'" data-i="'+i+'" aria-pressed="'+loggad+'" aria-label="'+(loggad?'Ångra '+lbl.toLowerCase():'Spara '+lbl.toLowerCase())+'"></button></li>';
+    const knapp=loggad
+      ?'<button class="tr-chk undo" type="button" data-tr="logga" data-id="'+id+'" data-i="'+i+'" aria-label="Ångra '+lbl.toLowerCase()+'">↺</button>'
+      :'<button class="tr-chk" type="button" data-tr="logga" data-id="'+id+'" data-i="'+i+'" aria-label="Spara '+lbl.toLowerCase()+'">✓</button>';
+    h+='<li class="tr-set work'+klass+'"><span class="tr-tag">'+lbl+(amrap?'<em>5+</em>':'')+'</span>'+
+      '<span class="tr-sw"><b>'+fmt(w)+' kg</b><small>'+under+'</small></span>'+mitt+knapp+'</li>';
   }
   return h+'</ol></section>';
 }
 
 function vyHistorik(){
   const n=state.history.length;
-  const rader=state.history.slice().reverse().map(e=>'<li><div class="dt">'+esc(datumText(e.date,true))+' · pass '+e.pass+'</div><p>'+
-    e.lifts.map(l=>LYFT[l.id].namn+' '+fmt(l.w)+' × '+l.reps.map(r=>r<5?'<span class="f">'+r+'</span>':r).join(', ')).join('<br>')+'</p></li>').join('');
-  return '<details class="tr-fold" data-f="hist"><summary><span class="tr-pm"></span><span class="spc">Historik</span><span class="cnt">'+(n?n+' pass':'')+'</span></summary>'+
-    (n?'<ol class="tr-hist">'+rader+'</ol>':'<p class="tr-tom-lista">Inga avslutade pass än.</p>')+'</details>';
+  const rader=state.history.slice().reverse().map(e=>'<li><span class="h-date">'+esc(langtDatum(e.date))+' · Pass '+e.pass+'</span>'+
+    e.lifts.map(l=>'<span class="h-line">'+LYFT[l.id].namn+' '+fmt(l.w)+' kg × '+l.reps.map(r=>r<5?'<span class="f">'+r+'</span>':r).join(', ')+'</span>').join('')+'</li>').join('');
+  return '<details class="tr-drawer" data-f="hist"><summary>Historik <small>'+n+' pass</small></summary>'+
+    '<div class="tr-drawer-body">'+(n?'<ol class="tr-hist">'+rader+'</ol>':'<p class="tr-hint">Inga avslutade pass än.</p>')+'</div></details>';
 }
 
 function vyRegler(){
-  return '<details class="tr-fold" data-f="regler"><summary><span class="tr-pm"></span><span class="spc">Regler</span></summary><ul class="tr-regler">'+
+  return '<details class="tr-drawer" data-f="regler"><summary>Regler</summary><div class="tr-drawer-body"><ul class="tr-rules">'+
     '<li>Tre pass i veckan, mån, ons och fre. Vecka 1 blir A B A och vecka 2 B A B.</li>'+
     '<li>A: knäböj 3 × 5, axelpress 3 × 5, marklyft 1 × 5. B: knäböj 3 × 5, bänkpress 3 × 5, marklyft 1 × 5.</li>'+
     '<li>Sista setet i knäböj, bänk och axelpress är 5+. Klarar du alla set blir det +2,5 kg nästa pass. 10 eller fler reps på sista setet ger +5 kg.</li>'+
     '<li>Marklyft är alltid exakt 5 reps och ökar 2,5 kg.</li>'+
     '<li>Under 5 reps i något set är fail och ger samma vikt nästa gång. Tre fail i rad ger −10 %, avrundat nedåt till närmaste 2,5 kg.</li>'+
-    '<li>Vilotimern startar när du bockar av ett set. Målet är 2 min de första sex passen, 3 min till och med pass 18 och sedan 5 min. Efter ett fail läggs 1 min till, efter uppvärmning gäller 1 min. Timern räknar vidare, så vila längre om du behöver.</li>'+
+    '<li>Vilotimern startar när du loggar ett set. Målet är 2 min de första sex passen, 3 min till och med pass 18 och sedan 5 min. Efter ett fail läggs 1 min till, efter uppvärmning gäller 1 min. Timern räknar vidare, så vila längre om du behöver.</li>'+
     '<li>Stången väger 20 kg. Skivor: 25, 20, 15, 10, 5, 2,5 och 1,25 kg.</li>'+
-  '</ul></details>';
+  '</ul></div></details>';
 }
 
 function vyBackup(){
-  return '<details class="tr-fold" data-f="backup"><summary><span class="tr-pm"></span><span class="spc">Backup</span><span class="cnt">på den här enheten</span></summary>'+
-    '<p class="tr-tom-lista">Datan finns bara i den här telefonen. Kopiera den som text ibland och spara den, till exempel i Anteckningar. Klistra in texten här för att återställa eller flytta till en ny telefon.</p>'+
-    '<button class="tr-btn ghost" type="button" data-tr="kopiera">Kopiera backup</button>'+
+  return '<details class="tr-drawer" data-f="backup"><summary>Backup</summary><div class="tr-drawer-body">'+
+    '<p class="tr-hint">Datan finns bara i den här telefonen. Kopiera den som text ibland och spara den, till exempel i Anteckningar. Klistra in texten här för att återställa eller flytta till en ny telefon.</p>'+
+    '<button class="tr-btn" type="button" data-tr="kopiera">Kopiera backup</button>'+
     '<textarea id="tr-backup" placeholder="Klistra in backup här" aria-label="Backup-text"></textarea>'+
-    '<button class="tr-btn ghost" type="button" data-tr="aterstall">Återställ från backup</button>'+
-    '<div class="tr-saved" id="tr-saved">'+esc(meddelande)+'</div></details>';
+    '<button class="tr-btn" type="button" data-tr="aterstall">Återställ från backup</button>'+
+    '<p class="tr-saved" id="tr-saved">'+esc(meddelande)+'</p></div></details>';
 }
 
 function rita(){
@@ -279,12 +284,12 @@ function rita(){
 /* ---------- timer, ljud, skärm ---------- */
 function skapaTimer(){
   timerEl=document.createElement('div');
-  timerEl.className='tr tr-timer';timerEl.hidden=true;
-  timerEl.innerHTML='<div class="tr-t-spar"><div class="tr-t-fyll"></div></div><div class="tr-t-rad">'+
-    '<div class="tr-t-lbl"><span class="tr-t-text">Vila</span><small class="tr-t-mal"></small></div>'+
-    '<div class="tr-t-tid" role="timer">0:00</div><button class="tr-t-stopp" type="button">Stopp</button></div>';
+  timerEl.className='tr-timer';timerEl.hidden=true;
+  timerEl.innerHTML='<div class="tr-t-track"><div class="tr-t-fill"></div></div><div class="tr-t-row">'+
+    '<div class="tr-t-label"><span class="tr-t-text">Vila</span><small class="tr-t-mal"></small></div>'+
+    '<div class="tr-t-time" role="timer">0:00</div><button class="tr-t-stop" type="button">Stopp</button></div>';
   document.body.appendChild(timerEl);
-  timerEl.querySelector('.tr-t-stopp').onclick=()=>{if(state&&state.current){state.current.timer=null;spara();}tick();};
+  timerEl.querySelector('.tr-t-stop').onclick=()=>{if(state&&state.current){state.current.timer=null;spara();}tick();};
 }
 function startaTimer(mal,text){state.current.timer={start:Date.now(),target:mal,label:text};beepad=null;}
 const mmss=s=>Math.floor(s/60)+':'+pad(s%60);
@@ -295,8 +300,9 @@ function tick(){
   if(!t)return;
   const gatt=Math.max(0,Math.floor((Date.now()-t.start)/1000)),redo=gatt>=t.target;
   timerEl.classList.toggle('redo',redo);
-  timerEl.querySelector('.tr-t-fyll').style.width=Math.min(100,gatt/t.target*100)+'%';
-  timerEl.querySelector('.tr-t-tid').textContent=mmss(gatt);
+  timerEl.querySelector('.tr-t-fill').style.width=Math.min(100,gatt/t.target*100)+'%';
+  // varje siffra får en fast bredd, så att tiden inte hoppar i sidled
+  timerEl.querySelector('.tr-t-time').innerHTML=mmss(gatt).split('').map(c=>c===':'?'<i class="c">:</i>':'<i>'+c+'</i>').join('');
   timerEl.querySelector('.tr-t-text').textContent=redo?'Redo för nästa set':t.label;
   timerEl.querySelector('.tr-t-mal').textContent='Mål '+mmss(t.target);
   if(redo&&beepad!==t.start){if(gatt-t.target<3&&!document.hidden)signal();beepad=t.start;}
