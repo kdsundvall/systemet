@@ -73,8 +73,8 @@ Repot är publikt, men det innehåller bara sidan. Ingen av din data finns i fil
 https://kdsundvall.github.io/systemet/#synk=aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6akVzZGJ6Q1dsc2puQmlkMXg4ODNVSmxOUGcydU83UmtOTjRqRU5qNkxUaFMwOXNEelRvc1VPT2lfZEprQ0tNVXovZXhlYw==
 ```
 
-Gå till System → Synk och skriv lösenordet. Ingen knapp behövs — appen hämtar ner
-av sig själv en dryg sekund efter att lösenordet är ifyllt, och laddar om sig.
+Gå till System → Synk och skriv lösenordet. Ingen knapp behövs — appen börjar synka
+av sig själv en dryg sekund efter att lösenordet är ifyllt.
 
 Samma lösenord på alla enheter. Spara länken där du hittar den igen.
 
@@ -82,10 +82,22 @@ Lägg till sidan på hemskärmen på telefonen så beter den sig som en app.
 
 ## Hur det uppför sig
 
-- Ändringar skickas upp automatiskt några sekunder efter att du slutat skriva.
-- När du öppnar sidan hämtas den senaste versionen ner om den är nyare än din lokala.
-- Redigerar du på båda enheterna samtidigt vinner den som sparade sist. Undvik det.
-- Utan internet fungerar allt lokalt och skickas upp nästa gång.
+Allt sker av sig självt. Det finns inget att ladda upp eller ner.
+
+- Appen synkar när den öppnas, en och en halv sekund efter varje ändring, varje minut
+  medan den syns, när nätet kommer tillbaka, och när du lägger undan den.
+- Varje fält på varje dag, varje fält i System och träningen har en egen tidsstämpel.
+  Vid synk vinner den nyaste versionen av varje fält. Kryssar du en vana på telefonen
+  och skriver en anteckning på datorn samma dag blir båda kvar.
+- Översynerna slås ihop, så en översyn sparad på telefonen och en på datorn finns båda kvar.
+- Ändrar du samma fält på två enheter innan de hunnit synka vinner den senaste ändringen.
+- Det som kommer in från en annan enhet visas direkt, utan att sidan laddas om.
+- Utan internet sparas allt lokalt och skickas när nätet är tillbaka.
+- Inget raderas av synken. En enhet som saknar dagar får dem, den tar aldrig bort några.
+- En enhet med fel lösenord skickar aldrig upp något. System-fliken säger till.
+
+Första gången den här versionen körs på en enhet sparas en orörd kopia av all data
+under `enkel:fore-autosynk` i webbläsaren, om något skulle behöva återställas.
 
 ## Otestat
 

@@ -442,6 +442,8 @@ window.Trana={
     if(importerat&&opt.vidImport)opt.vidImport();
   },
   rita(){if(rot){const s=lasLagrat();if(s&&(!state||s.updatedAt>state.updatedAt))state=s;rita();}},
+  // Läs om från lagringen, t.ex. när synken hämtat en nyare version från en annan enhet.
+  lasOm(){if(rot){const s=lasLagrat();if(s){state=s;rita();}}},
   // 'A', 'B' eller null — vilket pass som avslutades ett visst datum (för Vecka-fliken).
   passPa(datum){
     const s=state||(opt?lasLagrat():null);if(!s)return null;

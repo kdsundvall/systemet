@@ -160,13 +160,15 @@ table.wk td.idag{background:rgba(47,90,76,.07)}
   text-transform:uppercase}
 .logg p{margin:6px 0 0;font-size:14px;line-height:1.5;white-space:pre-wrap}
 .hidden{display:none}
+.lankknapp{display:block;margin:12px auto 0;background:none;border:0;padding:4px;cursor:pointer;font-family:"Familjen Grotesk",sans-serif;
+  font-size:13px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 .err{font-size:13px;color:#8A4A3C;background:#F6E9E6;border:1px solid #E4CBC5;padding:10px 12px;border-radius:2px;
   margin-top:14px;line-height:1.45}
 footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
   font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-align:center;padding-bottom:10px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-<link rel="stylesheet" href="trana.css?v=1">
+<link rel="stylesheet" href="trana.css?v=2">
 </head>
 <body>
 <div class="wrap">
@@ -318,15 +320,15 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
 
   <div class="block">
     <div class="blk-h"><span>Synk</span><span class="note">telefon ↔ dator</span></div>
-    <div class="blurb">Datan krypteras i den här webbläsaren innan den skickas, och lagras i din egen Google Drive.
-      Lösenordet lämnar aldrig enheten — tappar du det går datan inte att läsa. Se SYNK.md för uppsättningen.
-      Lämnar du fälten tomma sparas allt bara lokalt.</div>
+    <div class="blurb">Fyll i samma adress och lösenord på varje enhet en gång. Sedan synkar appen av sig själv —
+      ändringar slås ihop fält för fält, så inget behöver laddas upp eller ner. Datan krypteras här innan den skickas
+      till din egen Google Drive, och lösenordet lämnar aldrig enheten. Lämnar du fälten tomma sparas allt bara lokalt.</div>
     <div class="field"><span class="lbl">Adress</span><input type="text" id="synkUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
     <div class="field"><span class="lbl">Lösenord</span><input type="password" id="synkFras" placeholder="samma på alla enheter"></div>
-    <button class="btn ghost" id="synkSpara" style="margin-top:12px">Spara och skicka upp</button>
-    <button class="btn ghost" id="synkHamta" style="margin-top:8px">Hämta ner nu</button>
+    <button class="btn ghost" id="synkNu" style="margin-top:12px">Synka nu</button>
     <div class="saved" id="synkSaved"></div>
     <div class="synkstat" id="synkStat"></div>
+    <button class="lankknapp" id="synkErsatt">Fel i molnkopian? Ersätt den med den här enheten</button>
   </div>
 
   <div class="block">
@@ -354,7 +356,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
 <a href="karta.html" style="color:var(--muted)">kartan</a></footer>
 </div>
 
-<script src="trana.js?v=1"></script>
+<script src="trana.js?v=2"></script>
 <script>
 /* ---------- lagring ---------- */
 const mem={},NYCK='enkel:';
@@ -437,9 +439,13 @@ document.querySelectorAll('[data-fold]').forEach(h=>{
 
 /* ---------- sparning ---------- */
 let t1=null,t2=null;
-function rort(){S.set('meta',JSON.stringify({uppdaterad:Date.now()}));synkaSenare();}
-function sparaDag(){clearTimeout(t1);t1=setTimeout(()=>{S.set('day:'+IDAG,JSON.stringify(dag));rort();},250);}
-function sparaIgar(){clearTimeout(t2);t2=setTimeout(()=>{S.set('day:'+IGAR,JSON.stringify(igar));rort();},250);}
+function rort(){S.set('meta',JSON.stringify({uppdaterad:Date.now()}));upptack();synkaSenare();}
+function sparaDag(){clearTimeout(t1);t1=setTimeout(()=>{t1=null;S.set('day:'+IDAG,JSON.stringify(dag));rort();},250);}
+function sparaIgar(){clearTimeout(t2);t2=setTimeout(()=>{t2=null;S.set('day:'+IGAR,JSON.stringify(igar));rort();},250);}
+// skriver direkt det som väntar på att sparas, så synken alltid ser det senaste
+function sparaPagaende(){
+  if(t1){clearTimeout(t1);t1=null;S.set('day:'+IDAG,JSON.stringify(dag));}
+  if(t2){clearTimeout(t2);t2=null;S.set('day:'+IGAR,JSON.stringify(igar));}}
 function sparaSys(rorDatan){S.set('system',JSON.stringify(sys));if(rorDatan!==false)rort();}
 function kvittera(id,t){const e=document.getElementById(id);e.textContent=t;setTimeout(()=>{if(e.textContent===t)e.textContent='';},2800);}
 
@@ -591,54 +597,68 @@ document.getElementById('sparaOversyn').onclick=()=>{
   sparaSys();ritaOversyn();kvittera('oSaved','Sparad i loggen');};
 
 /* ---------- system ---------- */
-function noteraSynk(vad,antal){
-  S.set('synkstatus',JSON.stringify({tid:Date.now(),vad:vad,antal:antal}));}
+function noteraSynk(vad,info){
+  S.set('synkstatus',JSON.stringify({tid:Date.now(),vad:vad,info:info||''}));}
+function tidText(t){
+  const d=new Date(t);
+  const idagD=nk(d)===nk(new Date());
+  return (idagD?'idag':VD[d.getDay()]+' '+d.getDate()+' '+MN[d.getMonth()].slice(0,3))+' '+
+    String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 
 function ritaSys(){
   document.getElementById('startDatum').value=sys.start;
   document.getElementById('synkUrl').value=sys.synk.url||'';
   document.getElementById('synkFras').value=sys.synk.fras||'';
-  const el=document.getElementById('synkStat');
+  ritaSynkStatus();
+}
+// Bara statusraden — fälten rörs inte, så inget du håller på att skriva skrivs över.
+function ritaSynkStatus(){
+  const el=document.getElementById('synkStat');if(!el)return;
   const dagar=S.keys('day:').length;
   let st=null;try{st=JSON.parse(S.get('synkstatus')||'null');}catch(e){}
   let rad='<b>'+dagar+'</b> '+(dagar===1?'dag':'dagar')+' finns i appen på den här enheten.';
-  if(st&&st.tid){
-    const d=new Date(st.tid);
-    const nar=VD[d.getDay()]+' '+d.getDate()+' '+MN[d.getMonth()].slice(0,3)+' '+
-      String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    const ord={ner:'Hämtade ner',upp:'Skickade upp',aktuell:'Kollade molnet — allt var redan aktuellt'}[st.vad]||st.vad;
-    rad+='<br>'+ord+(st.vad==='aktuell'?'':' <b>'+st.antal+'</b> '+(st.antal===1?'dag':'dagar'))+' · '+nar+'.';
-  }else if(sys.synk.url&&!sys.synk.fras){
-    rad+='<br><b>Adressen är ifylld.</b> Skriv lösenordet så hämtas allt ner av sig själv.';
-  }else if(sys.synk.url&&sys.synk.fras){
-    rad+='<br>Ingen synk har körts på den här enheten än.';
-  }else{
-    rad+='<br>Synken är av — allt sparas bara här.';
-  }
+  if(!sys.synk.url&&!sys.synk.fras)rad+='<br>Synken är av — allt sparas bara här.';
+  else if(!sys.synk.fras)rad+='<br><b>Adressen är ifylld.</b> Skriv lösenordet så synkar appen av sig själv.';
+  else if(!sys.synk.url)rad+='<br>Fyll i adressen så synkar appen av sig själv.';
+  else if(st&&st.tid&&st.vad!=='fel')rad+='<br>Synkad '+tidText(st.tid)+'. Ändringar skickas och hämtas av sig själva.';
+  else if(st&&st.tid&&st.info==='losen')rad+='<br><b>Kan inte läsa molnkopian</b> ('+tidText(st.tid)+
+    '). Är lösenordet samma som på dina andra enheter?';
+  else if(st&&st.tid)rad+='<br>Ingen kontakt med molnet '+tidText(st.tid)+
+    '. Allt sparas här och skickas när nätet är tillbaka.';
+  else rad+='<br>Synkar…';
   el.innerHTML=rad;
 }
 document.getElementById('sparaInst').onclick=()=>{
   const sd=document.getElementById('startDatum').value;if(sd)sys.start=sd;
   sparaSys();rita();kvittera('instSaved','Sparade');};
 
-/* ---------- kryptering + synk ---------- */
+/* ---------- kryptering ---------- */
 const b64=b=>{let s='';const a=new Uint8Array(b);for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);};
 const ab=s=>{const t=atob(s),a=new Uint8Array(t.length);for(let i=0;i<t.length;i++)a[i]=t.charCodeAt(i);return a;};
 async function nyckel(fras,salt){
   const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(fras),'PBKDF2',false,['deriveKey']);
   return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,
     {name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+// Nyckeln tar en stund att räkna fram, så den sparas i minnet medan sidan är öppen.
+const nycklar=new Map();
+async function nyckelFor(fras,salt64){
+  const k=fras+'|'+salt64;
+  if(!nycklar.has(k))nycklar.set(k,await nyckel(fras,ab(salt64)));
+  return nycklar.get(k);}
+let minSalt=null;
 async function kryptera(txt,fras){
-  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
-  const k=await nyckel(fras,salt);
+  if(!minSalt||minSalt.fras!==fras)minSalt={fras,s:b64(crypto.getRandomValues(new Uint8Array(16)))};
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const k=await nyckelFor(fras,minSalt.s);
   const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(txt));
-  return b64(salt)+'.'+b64(iv)+'.'+b64(ct);}
+  return minSalt.s+'.'+b64(iv)+'.'+b64(ct);}
 async function dekryptera(str,fras){
   const p=str.split('.');if(p.length!==3)throw new Error('format');
-  const k=await nyckel(fras,ab(p[0]));
+  const k=await nyckelFor(fras,p[0]);
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ab(p[1])},k,ab(p[2]));
   return new TextDecoder().decode(pt);}
 
+/* ---------- backup ---------- */
 function helaState(){
   // synk-inställningarna följer aldrig med upp — lösenordet stannar på enheten
   let sysUt=S.get('system');
@@ -665,101 +685,198 @@ function skrivState(o){
     if(ny&&ny!==lokal)S.set('trana',ny);}
   S.set('meta',JSON.stringify({uppdaterad:o.uppdaterad||Date.now()}));}
 
-let synkTimer=null,synkKlar=false;
-function synkaSenare(){
-  if(!sys.synk.url||!sys.synk.fras||!synkKlar)return;
-  clearTimeout(synkTimer);synkTimer=setTimeout(()=>skickaUpp(true),4000);}
-async function fjarrInfo(){
-  try{const j=await fetch(sys.synk.url).then(x=>x.json());
-    if(!j||!j.data)return {tid:0,dagar:0};
-    const o=JSON.parse(await dekryptera(j.data,sys.synk.fras));
-    return {tid:o.uppdaterad||0,dagar:Object.keys(o.dagar||{}).length};
-  }catch(e){return {tid:-1,dagar:-1};}}
-async function remoteTid(){return (await fjarrInfo()).tid;}
-function lokalTid(){try{return (JSON.parse(S.get('meta')||'{}').uppdaterad)||0;}catch(e){return 0;}}
+/* ---------- synk: automatisk, fält för fält ---------- */
+// Varje fält på varje dag, varje fält i System och träningen är egna "poster" med en
+// tidsstämpel för när de senast ändrades. Vid synk vinner den nyaste versionen av varje
+// post. Inget skrivs över i klump, så ingen enhet behöver fråga — det sker av sig självt.
+// Kryssar du en vana på telefonen och skriver en anteckning på datorn samma dag blir
+// båda kvar.
+const SYSFALT=['start','porrSenast','forePorr','oversyn','nasta','logg'];
+const SYSDEF={start:'2026-08-23',porrSenast:'',forePorr:'',oversyn:{o1:'',o2:'',o3:'',test:''},logg:[]};
+const DAGNYCKEL=/^day:\d{4}-\d{2}-\d{2}$/;
+const hash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;
+  return (h>>>0).toString(36)+'.'+s.length.toString(36);};
+
+// Ett fält som bara har sitt grundvärde räknas inte som en ändring. Annars skulle en ny
+// dag på datorn (allt tomt) kunna vinna över det du kryssade i på telefonen.
+function arStandard(k,v){
+  const i=k.indexOf('|');
+  if(i>0){const f=k.slice(i+1);return Object.prototype.hasOwnProperty.call(TOM,f)&&JSON.stringify(TOM[f])===v;}
+  if(k==='sys.nasta')return true;   // räknas fram automatiskt när den saknas
+  if(k.indexOf('sys.')===0){const f=k.slice(4);return Object.prototype.hasOwnProperty.call(SYSDEF,f)&&JSON.stringify(SYSDEF[f])===v;}
+  return false;}
+
+function lokalaPoster(){
+  const p={};
+  S.keys('day:').forEach(k=>{
+    if(!DAGNYCKEL.test(k))return;
+    let o=null;try{o=JSON.parse(S.get(k));}catch(e){}
+    if(o&&typeof o==='object')for(const f in o)p[k+'|'+f]=JSON.stringify(o[f]);});
+  const tr=S.get('trana');if(tr)p.trana=tr;
+  let q={};try{q=JSON.parse(S.get('system')||'{}')||{};}catch(e){}
+  SYSFALT.forEach(f=>{if(q[f]!==undefined)p['sys.'+f]=JSON.stringify(q[f]);});
+  return p;}
+
+// Jämför med de senast kända versionerna. Det som ändrats här får tidsstämpel nu.
+let kanda=null;
+function upptack(){
+  const p=lokalaPoster(),nu=Date.now();let andrat=false;
+  if(!kanda){try{kanda=JSON.parse(S.get('synkkanda')||'null');}catch(e){kanda=null;}}
+  if(!kanda){
+    // Första gången med automatisk synk: spara en orörd kopia av allt, och ge det som
+    // redan finns tiden för den senaste ändringen på den här enheten.
+    let bas=0;try{bas=JSON.parse(S.get('meta')||'{}').uppdaterad||0;}catch(e){}
+    if(!S.get('fore-autosynk'))S.set('fore-autosynk',JSON.stringify(helaState()));
+    kanda={};for(const k in p)kanda[k]={t:arStandard(k,p[k])?0:bas,h:hash(p[k])};
+    andrat=true;
+  }else{
+    for(const k in p){
+      const h=hash(p[k]);
+      if(!kanda[k]){kanda[k]={t:arStandard(k,p[k])?0:nu,h};andrat=true;}
+      else if(kanda[k].h!==h){kanda[k]={t:nu,h};andrat=true;}}
+  }
+  if(andrat)S.set('synkkanda',JSON.stringify(kanda));
+  return p;}
+
+// Molnkopian, både det nya formatet (med tidsstämplar) och det gamla.
+function fjarrPoster(o){
+  const p={},st=o.stamplar||{},bas=o.uppdaterad||0;
+  const tid=(k,v)=>typeof st[k]==='number'?st[k]:(arStandard(k,v)?0:bas);
+  for(const k in (o.dagar||{})){
+    if(!DAGNYCKEL.test(k))continue;
+    let d=null;try{d=JSON.parse(o.dagar[k]);}catch(e){}
+    if(d&&typeof d==='object')for(const f in d){const kk=k+'|'+f,v=JSON.stringify(d[f]);p[kk]={v,t:tid(kk,v)};}}
+  if(typeof o.trana==='string')p.trana={v:o.trana,t:tid('trana',o.trana)};
+  let q=null;try{q=o.system?JSON.parse(o.system):null;}catch(e){}
+  if(q)SYSFALT.forEach(f=>{if(q[f]!==undefined){const kk='sys.'+f,v=JSON.stringify(q[f]);p[kk]={v,t:tid(kk,v)};}});
+  return p;}
+
+// Samma form som förut, så att en äldre flik som ligger öppen fortfarande kan läsa den.
+function byggMoln(p){
+  const ut={v:2,uppdaterad:Date.now(),dagar:{},stamplar:{}},dagar={},sysUt={};
+  for(const k in p){
+    ut.stamplar[k]=kanda[k]?kanda[k].t:0;
+    const i=k.indexOf('|');
+    if(i>0){const d=k.slice(0,i);(dagar[d]=dagar[d]||{})[k.slice(i+1)]=JSON.parse(p[k]);}
+    else if(k==='trana')ut.trana=p[k];
+    else if(k.indexOf('sys.')===0)sysUt[k.slice(4)]=JSON.parse(p[k]);}
+  for(const d in dagar)ut.dagar[d]=JSON.stringify(dagar[d]);
+  ut.system=JSON.stringify(sysUt);
+  return ut;}
+
+function skrivPost(k,v){
+  const i=k.indexOf('|');
+  if(i>0){const d=k.slice(0,i);let o={};try{o=JSON.parse(S.get(d)||'{}')||{};}catch(e){}
+    o[k.slice(i+1)]=JSON.parse(v);S.set(d,JSON.stringify(o));return;}
+  if(k==='trana'){S.set('trana',v);return;}
+  let q={};try{q=JSON.parse(S.get('system')||'{}')||{};}catch(e){}
+  q[k.slice(4)]=JSON.parse(v);S.set('system',JSON.stringify(q));}
+
+// Översynerna slås ihop i stället för att den ena listan vinner.
+function slaIhopLogg(a,b){
+  let x=[],y=[];try{x=JSON.parse(a)||[];}catch(e){}try{y=JSON.parse(b)||[];}catch(e){}
+  const sett=new Set(),ut=[];
+  x.concat(y).forEach(l=>{const s=JSON.stringify(l);if(!sett.has(s)){sett.add(s);ut.push(l);}});
+  ut.sort((m,n)=>String(m.datum||'').localeCompare(String(n.datum||'')));
+  return JSON.stringify(ut);}
+
+// Avgör post för post vad den här enheten ska ta emot, och om molnet behöver det här.
+function slaIhop(lok,fj){
+  const ny={};let upp=false;
+  new Set(Object.keys(lok).concat(Object.keys(fj))).forEach(k=>{
+    const L=lok[k],R=fj[k],Lt=kanda[k]?kanda[k].t:0;
+    if(R===undefined){upp=true;return;}
+    if(L===undefined){ny[k]=R;return;}
+    if(L===R.v){if(R.t>Lt)kanda[k].t=R.t;return;}
+    if(k==='sys.logg'){const u=slaIhopLogg(L,R.v);if(u!==L)ny[k]={v:u,t:Math.max(Lt,R.t)};if(u!==R.v)upp=true;return;}
+    if(R.t>Lt)ny[k]=R;else upp=true;});
+  return {ny,upp};}
+
+// Det som kom från molnet visas direkt — ingen omladdning.
+function ritaOm(nya){
+  ladda();rita();
+  const vald=document.querySelector('nav button[aria-selected="true"]'),flik=vald?vald.dataset.tab:'';
+  if(flik==='vecka')ritaVecka();
+  const iOversyn=document.activeElement&&document.getElementById('tab-oversyn').contains(document.activeElement);
+  if(flik==='oversyn'&&!iOversyn&&nya.some(k=>k.indexOf('sys.')===0))ritaOversyn();
+  if(nya.indexOf('trana')>=0&&window.Trana&&Trana.lasOm)Trana.lasOm();}
+
+function natt(url,init){
+  const c=new AbortController(),t=setTimeout(()=>c.abort(),20000);
+  return fetch(url,Object.assign({signal:c.signal,cache:'no-store'},init||{})).finally(()=>clearTimeout(t));}
+async function skickaMoln(p){
+  const data=await kryptera(JSON.stringify(byggMoln(p)),sys.synk.fras);
+  let r;try{r=await natt(sys.synk.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({data})});}catch(e){throw 'natt';}
+  if(!r.ok)throw 'natt';}
+
+let synkPagar=false,synkIgen=false,synkTimer=null;
+async function synka(manuell){
+  if(!sys.synk.url||!sys.synk.fras){if(manuell)synkSaknas();return;}
+  if(!window.crypto||!crypto.subtle){if(manuell)kvittera('synkSaved','Kryptering kräver https');return;}
+  if(synkPagar){synkIgen=true;return;}
+  synkPagar=true;clearTimeout(synkTimer);
+  try{
+    let o=null;
+    try{const j=await (await natt(sys.synk.url)).json();
+      if(j&&j.data){try{o=JSON.parse(await dekryptera(j.data,sys.synk.fras));}catch(e){throw 'losen';}}
+    }catch(e){throw e==='losen'?e:'natt';}
+    // Härifrån till uppskicket finns ingen väntan, så inget du skriver hinner komma emellan.
+    sparaPagaende();
+    const lok=upptack(),{ny,upp}=slaIhop(lok,o?fjarrPoster(o):{}),nya=Object.keys(ny);
+    nya.forEach(k=>{skrivPost(k,ny[k].v);kanda[k]={t:ny[k].t,h:hash(ny[k].v)};});
+    S.set('synkkanda',JSON.stringify(kanda));
+    if(nya.length)ritaOm(nya);
+    if(upp)await skickaMoln(lokalaPoster());
+    noteraSynk('ok');
+    if(manuell)kvittera('synkSaved',upp||nya.length?'Synkad':'Allt var redan synkat');
+  }catch(e){
+    noteraSynk('fel',e==='losen'?'losen':'natt');
+    if(manuell)kvittera('synkSaved',e==='losen'?'Kan inte läsa molnet — fel lösenord?':'Ingen kontakt med molnet just nu');
+  }finally{
+    synkPagar=false;ritaSynkStatus();
+    if(synkIgen){synkIgen=false;synkaSenare(300);}
+  }
+}
+function synkaSenare(ms){
+  if(!sys.synk.url||!sys.synk.fras)return;
+  clearTimeout(synkTimer);synkTimer=setTimeout(()=>synka(false),ms==null?1500:ms);}
 
 function lasSynkFalt(){
   const u=document.getElementById('synkUrl'),f=document.getElementById('synkFras');
   if(!u||!f)return;
   const nu=u.value.trim(),nf=f.value;
-  if(nu!==sys.synk.url||nf!==sys.synk.fras){
-    sys.synk.url=nu;sys.synk.fras=nf;synkKlar=false;sparaSys(false);}}
+  if(nu!==sys.synk.url||nf!==sys.synk.fras){sys.synk.url=nu;sys.synk.fras=nf;sparaSys(false);}}
 function synkSaknas(){
   if(!sys.synk.url){kvittera('synkSaved','Fyll i adressen först');return true;}
   if(!sys.synk.fras){kvittera('synkSaved','Fyll i lösenordet först');return true;}
   return false;}
 
-async function skickaUpp(tyst){
-  if(!sys.synk.url||!sys.synk.fras){if(!tyst)synkSaknas();return;}
-  if(!window.crypto||!crypto.subtle){if(!tyst)kvittera('synkSaved','Kryptering kräver https');return;}
-  try{
-    const fjarr=await fjarrInfo(), rt=fjarr.tid;
-    const minaDagar=S.keys('day:').length;
-    // Tidsstämpeln ensam räcker inte. En enhet med färre dagar än molnet är nästan
-    // alltid en gammal flik som ligger kvar öppen — den får aldrig krympa molnkopian.
-    const krymper=fjarr.dagar>minaDagar;
-    if(tyst){
-      if(rt>lokalTid()){kvittera('synkSaved','Nyare data finns uppe — tryck Hämta ner nu');return;}
-      if(krymper){kvittera('synkSaved','Molnet har '+fjarr.dagar+' dagar, den här enheten '+minaDagar+
-        ' — skickar inte upp');ritaSys();return;}
-    }else{
-      if(rt===-1&&!confirm('Kunde inte läsa det som ligger uppe — fel lösenord, eller inget uppe än. Skriva över det?'))return;
-      if(rt>lokalTid()&&!confirm('Det som ligger uppe är nyare än det här. Skriva över det?'))return;
-      if(krymper&&!confirm('Molnkopian har '+fjarr.dagar+' dagar, den här enheten har '+minaDagar+
-        '. Skickar du upp försvinner mellanskillnaden. Fortsätta?'))return;
-    }
-    const data=await kryptera(JSON.stringify(helaState()),sys.synk.fras);
-    const r=await fetch(sys.synk.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({data})});
-    if(!r.ok)throw new Error(r.status);
-    synkKlar=true;
-    noteraSynk('upp',Object.keys(helaState().dagar).length);
-    if(!tyst)kvittera('synkSaved','Uppskickat');
-    ritaSys();
-  }catch(e){kvittera('synkSaved','Kunde inte skicka upp');}
-}
-async function hamtaNer(manuell){
-  if(manuell)lasSynkFalt();
-  if(synkSaknas())return;
-  if(!window.crypto||!crypto.subtle){kvittera('synkSaved','Kryptering kräver https');return;}
-  try{
-    const r=await fetch(sys.synk.url,{method:'GET'});
-    const j=await r.json();
-    if(!j||!j.data){synkKlar=true;kvittera('synkSaved','Inget uppe än');ritaSys();return;}
-    const o=JSON.parse(await dekryptera(j.data,sys.synk.fras));
-    const lokal=lokalTid();
-    const lokalaDagar=S.keys('day:').length, fjarrDagar=Object.keys(o.dagar||{}).length;
-    // Tidsstämpeln räcker inte som ensam domare: en tom enhet ska alltid hämta,
-    // och har molnet fler dagar än enheten är enheten efter oavsett vad klockan säger.
-    const behovs=(o.uppdaterad||0)>lokal || lokalaDagar===0 || fjarrDagar>lokalaDagar;
-    if(!behovs){synkKlar=true;noteraSynk('aktuell',0);kvittera('synkSaved','Redan aktuell');ritaSys();return;}
-    if(fjarrDagar<lokalaDagar&&
-       !confirm('Molnkopian har '+fjarrDagar+' dagar, den här enheten har '+lokalaDagar+
-                '. Hämtar du ner ersätts dina '+lokalaDagar+' dagar. Fortsätta?')){
-      kvittera('synkSaved','Avbröt');return;}
-    skrivState(o);synkKlar=true;
-    noteraSynk('ner',Object.keys(o.dagar).length);
-    kvittera('synkSaved','Hämtad — laddar om');
-    setTimeout(()=>location.reload(),800);
-  }catch(e){kvittera('synkSaved','Kunde inte läsa — fel lösenord eller adress?');}
-}
-document.getElementById('synkSpara').onclick=()=>{
-  lasSynkFalt();
-  if(synkSaknas())return;
-  skickaUpp(false);};
-document.getElementById('synkHamta').onclick=()=>hamtaNer(true);
+document.getElementById('synkNu').onclick=()=>{lasSynkFalt();if(!synkSaknas())synka(true);};
+// Nödutgång: den här enhetens version gäller, t.ex. efter byte av lösenord.
+document.getElementById('synkErsatt').onclick=async()=>{
+  lasSynkFalt();if(synkSaknas())return;
+  if(!confirm('Den här enhetens data blir den som gäller och ersätter det som ligger uppe. '+
+    'Dina andra enheter hämtar den sedan. Fortsätta?'))return;
+  sparaPagaende();
+  const p=upptack(),nu=Date.now();
+  for(const k in p)kanda[k]={t:nu,h:hash(p[k])};
+  S.set('synkkanda',JSON.stringify(kanda));
+  try{await skickaMoln(p);noteraSynk('ok');kvittera('synkSaved','Molnkopian är ersatt');}
+  catch(e){kvittera('synkSaved','Kunde inte skicka upp — försök igen');}
+  ritaSynkStatus();};
 
-// Fyller du i båda fälten hämtar appen ner av sig själv. Ingen knapp att komma ihåg.
+// Fyller du i båda fälten börjar appen synka av sig själv. Ingen knapp att komma ihåg.
 let autoTimer=null,senastProvad='';
-function kanskeAutoHamta(){
+function kanskeAutoSynka(){
   const u=document.getElementById('synkUrl').value.trim(),f=document.getElementById('synkFras').value;
   if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u)||!f)return;
   const kombo=u+'|'+f;
   if(kombo===senastProvad)return;
   clearTimeout(autoTimer);
-  autoTimer=setTimeout(()=>{senastProvad=kombo;lasSynkFalt();hamtaNer(false);},1200);}
+  autoTimer=setTimeout(()=>{senastProvad=kombo;lasSynkFalt();synka(false);},1200);}
 ['synkUrl','synkFras'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',kanskeAutoHamta);});
+  document.getElementById(id).addEventListener('input',kanskeAutoSynka);});
 
 /* ---------- export ---------- */
 function laddaNer(namn,innehall,typ){
@@ -806,20 +923,24 @@ document.getElementById('jsonFil').onchange=e=>{
 
 /* ---------- start ---------- */
 ladda();
+upptack();   // tidsstämplar för det som finns, innan något hinner ändras
 Object.keys(sys.fold).forEach(f=>satt(f,sys.fold[f]));
 rita();ritaSys();
 if(window.Trana)Trana.mount({rot:document.getElementById('tab-trana'),
   las:()=>S.get('trana'),skriv:v=>{S.set('trana',v);rort();},
   vidImport:()=>document.querySelector('nav button[data-tab="trana"]').click()});
 else document.getElementById('tab-trana').innerHTML='<div class="err">Träningsdelen kunde inte laddas. Kontrollera nätet och ladda om sidan.</div>';
-if(sys.synk.url&&sys.synk.fras)hamtaNer(false);
 
-// Appen ligger kvar öppen på telefonen. När du plockar upp den igen:
-// har dygnet vänt laddas den om, annars hämtas det som hänt på andra enheter.
+// Synken sköter sig själv: när appen öppnas, strax efter varje ändring, varje minut
+// medan den syns, när nätet kommer tillbaka, och när du lägger undan den.
+synka(false);
+setInterval(()=>{if(document.visibilityState==='visible')synka(false);},60000);
+window.addEventListener('online',()=>synka(false));
+window.addEventListener('pagehide',()=>synka(false));
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState!=='visible')return;
-  if(nk(new Date())!==IDAG){location.reload();return;}
-  if(sys.synk.url&&sys.synk.fras&&synkKlar)hamtaNer(false);});
+  if(document.visibilityState!=='visible'){synka(false);return;}
+  if(nk(new Date())!==IDAG){location.reload();return;}   // dygnet har vänt
+  synka(false);});
 </script>
 </body>
 </html>

@@ -17,23 +17,17 @@ Det tar en minut innan ändringen syns.
 
 Gör det steget, inte bara ett bokmärke. Safari på iPhone rensar lagringen för sidor du
 inte besökt på sju dagar. En sida på hemskärmen räknas som en app och har egen lagring
-som ligger kvar. Med synken påslagen spelar det mindre roll — då finns sanningen i din
-Drive och telefonen är bara en kopia.
+som ligger kvar. Med synken påslagen spelar det mindre roll — en tömd enhet hämtar
+tillbaka allt av sig själv.
 
 ## Synken
 
-Se SYNK.md. Samma adress och samma lösenord på varje enhet.
+Se SYNK.md. Samma adress och samma lösenord på varje enhet, sedan sköter den sig själv.
 
-## Om molnkopian är fel och datorn har rätt data
+## Om molnkopian är fel och en enhet har rätt data
 
-Molnkopian är bara en kopia. Har en enhet rätt data gör du så här från den:
+Det ska inte behövas i vanlig användning. Men om du till exempel bytt lösenord:
 
 1. Öppna appen på den enhet som har rätt data
-2. System → Synk → **Spara och skicka upp**
-3. Får du frågan *"Det som ligger uppe är nyare"* eller *"Kunde inte läsa det som
-   ligger uppe"* — svara OK. Det är kopian du vill ersätta.
-4. På övriga enheter: **Hämta ner nu**
-
-En enhet skickar aldrig upp något automatiskt förrän den hämtat ner minst en gång,
-och en automatisk synk skriver aldrig över något nyare. Det manuella uppskicket är
-det enda som kan skriva över — och det frågar först.
+2. System → Synk → **Fel i molnkopian? Ersätt den med den här enheten**
+3. Övriga enheter hämtar den av sig själva nästa gång de synkar.
