@@ -166,6 +166,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
   font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-align:center;padding-bottom:10px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<link rel="stylesheet" href="trana.css?v=1">
 </head>
 <body>
 <div class="wrap">
@@ -177,6 +178,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
 
 <nav role="tablist">
   <button role="tab" aria-selected="true" data-tab="idag">Idag</button>
+  <button role="tab" aria-selected="false" data-tab="trana">Träning</button>
   <button role="tab" aria-selected="false" data-tab="vecka">Vecka</button>
   <button role="tab" aria-selected="false" data-tab="oversyn">Översyn</button>
   <button role="tab" aria-selected="false" data-tab="sys">System</button>
@@ -260,6 +262,8 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
     </div>
   </div>
 </div>
+
+<div id="tab-trana" class="hidden"></div>
 
 <div id="tab-vecka" class="hidden">
   <div class="block" style="margin-top:22px">
@@ -350,6 +354,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-fa
 <a href="karta.html" style="color:var(--muted)">kartan</a></footer>
 </div>
 
+<script src="trana.js?v=1"></script>
 <script>
 /* ---------- lagring ---------- */
 const mem={},NYCK='enkel:';
@@ -524,8 +529,9 @@ document.getElementById('skarmNej').onclick=()=>{igar.skarm=igar.skarm===false?n
 document.querySelectorAll('nav button').forEach(b=>{
   b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected','false'));
     b.setAttribute('aria-selected','true');
-    ['idag','vecka','oversyn','sys'].forEach(t=>
+    ['idag','trana','vecka','oversyn','sys'].forEach(t=>
       document.getElementById('tab-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+    if(b.dataset.tab==='trana'&&window.Trana)Trana.rita();
     if(b.dataset.tab==='vecka')ritaVecka();
     if(b.dataset.tab==='oversyn')ritaOversyn();
     if(b.dataset.tab==='sys')ritaSys();
@@ -551,6 +557,8 @@ function ritaVecka(){
     +rad('Toa-rutin',d=>prick(d.toa))
     +rad('Neigong',d=>prick(d.neigong))
     +rad('Lek',d=>prick(d.lek))
+    +'<tr><td class="row-lbl">Träning</td>'+dagar.map(x=>'<td'+(x.k===IDAG?' class="idag"':'')+'>'+
+      ((window.Trana&&Trana.passPa(x.k))||'—')+'</td>').join('')+'</tr>'
     +rad('Porr',d=>d.porr?'ja':'—')
     +rad('Runk',d=>d.runk?(d.narvaro===false?'ej närv':'närv'):'—')
     +rad('Ett ord',d=>d.ord?esc(d.ord):'·');
@@ -638,6 +646,7 @@ function helaState(){
   const ut={uppdaterad:Date.now(),system:sysUt,dagar:{}};
   try{const m=JSON.parse(S.get('meta')||'{}');if(m.uppdaterad)ut.uppdaterad=m.uppdaterad;}catch(e){}
   S.keys('day:').forEach(k=>{ut.dagar[k]=S.get(k);});
+  const tr=S.get('trana');if(tr)ut.trana=tr;
   return ut;}
 function skrivState(o){
   if(o.system){
@@ -649,6 +658,11 @@ function skrivState(o){
       S.set('system',JSON.stringify(ny));}
     else S.set('system',o.system);}
   for(const k in o.dagar){if(/^day:\d{4}-\d{2}-\d{2}$/.test(k))S.set(k,o.dagar[k]);}
+  if(typeof o.trana==='string'){
+    // träningen har egen tidsstämpel — den nyaste versionen vinner, inte den som kom sist
+    const lokal=S.get('trana');
+    const ny=window.Trana?Trana.valjNyast(lokal,o.trana):(lokal||o.trana);
+    if(ny&&ny!==lokal)S.set('trana',ny);}
   S.set('meta',JSON.stringify({uppdaterad:o.uppdaterad||Date.now()}));}
 
 let synkTimer=null,synkKlar=false;
@@ -794,6 +808,10 @@ document.getElementById('jsonFil').onchange=e=>{
 ladda();
 Object.keys(sys.fold).forEach(f=>satt(f,sys.fold[f]));
 rita();ritaSys();
+if(window.Trana)Trana.mount({rot:document.getElementById('tab-trana'),
+  las:()=>S.get('trana'),skriv:v=>{S.set('trana',v);rort();},
+  vidImport:()=>document.querySelector('nav button[data-tab="trana"]').click()});
+else document.getElementById('tab-trana').innerHTML='<div class="err">Träningsdelen kunde inte laddas. Kontrollera nätet och ladda om sidan.</div>';
 if(sys.synk.url&&sys.synk.fras)hamtaNer(false);
 
 // Appen ligger kvar öppen på telefonen. När du plockar upp den igen:

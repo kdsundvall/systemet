@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Träning</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Träning">
+<meta name="theme-color" content="#EDEFF0">
+<link rel="apple-touch-icon" href="ikon-180.png">
+<link rel="icon" href="ikon-180.png">
+<link rel="manifest" href="trana.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Egen träningssida, utan resten av Systemet. Datan sparas bara i den här webbläsaren. */
+:root{--paper:#EDEFF0;--ground:#1F2729;--ink:#14191A;--muted:#6E7A7C;--line:#D2D8D9;--pine:#2F5A4C;--pine-lit:#5FA98E}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Familjen Grotesk",system-ui,sans-serif;
+  font-size:16px;line-height:1.45;padding-bottom:60px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:620px;margin:0 auto;padding:0 18px}
+header{padding:calc(26px + env(safe-area-inset-top,0px)) 0 4px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);display:flex;justify-content:space-between;align-items:baseline}
+h1{font-size:clamp(30px,9vw,42px);line-height:.98;margin:10px 0 0;font-weight:700;letter-spacing:-.025em}
+h1 em{font-style:italic;font-weight:400}
+footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-align:center;padding-bottom:10px}
+</style>
+<link rel="stylesheet" href="trana.css?v=1">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><span id="datum">—</span><span>Starting Strength</span></div>
+    <h1>Träning<em>.</em></h1>
+  </header>
+  <main id="trana"></main>
+  <footer>Datan finns bara i den här telefonen · ta en backup ibland</footer>
+</div>
+<script src="trana.js?v=1"></script>
+<script>
+const VD=['sön','mån','tis','ons','tor','fre','lör'],
+      MN=['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
+const d=new Date();
+document.getElementById('datum').textContent=VD[d.getDay()]+' '+d.getDate()+' '+MN[d.getMonth()];
+
+// Egen nyckel, så att den här sidan aldrig delar data med Systemet på samma telefon.
+const NYCKEL='trana:data';
+function las(){try{return localStorage.getItem(NYCKEL);}catch(e){return null;}}
+function skriv(v){try{localStorage.setItem(NYCKEL,v);}catch(e){}}
+
+const rot=document.getElementById('trana');
+if(window.Trana)Trana.mount({rot,las,skriv,backup:true});
+else rot.textContent='Sidan kunde inte laddas. Kontrollera nätet och ladda om.';
+
+// Har dygnet vänt när appen plockas upp igen laddas den om, så datumet stämmer.
+const start=d.toDateString();
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&new Date().toDateString()!==start)location.reload();});
+</script>
+</body>
+</html>

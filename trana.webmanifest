@@ -1,0 +1,15 @@
+{
+ "name": "Träning",
+ "short_name": "Träning",
+ "description": "Träningslogg för Starting Strength med pass A/B, skivor per sida och vilotimer.",
+ "lang": "sv",
+ "start_url": "./trana.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#EDEFF0",
+ "theme_color": "#EDEFF0",
+ "icons": [
+  {"src": "ikon-180.png", "sizes": "180x180", "type": "image/png"},
+  {"src": "ikon-512.png", "sizes": "512x512", "type": "image/png"}
+ ]
+}
