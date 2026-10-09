@@ -162,7 +162,16 @@ function vyStart(){
         '<button type="button" data-tr="np" data-v="A" aria-pressed="'+(startPass==='A')+'">A</button>'+
         '<button type="button" data-tr="np" data-v="B" aria-pressed="'+(startPass==='B')+'">B</button></div></div>'+
       '<button class="tr-btn primary" type="submit">Spara och börja</button>'+
-    '</form>'+(opt.backup?vyBackup():'');
+    '</form>'+vyFlytta()+(opt.backup?vyBackup():'');
+}
+
+// För appen på hemskärmen, som inte kan öppna länkar själv: klistra in länken här i stället.
+function vyFlytta(){
+  return '<details class="tr-drawer" data-f="flytta" open><summary>Har du en flyttlänk?</summary><div class="tr-drawer-body">'+
+    '<p class="tr-hint">Klistra in länken du fått (den som innehåller <b>#trana=</b>) eller en backup-text, så läggs vikterna och historiken in här.</p>'+
+    '<textarea id="tr-flytt" placeholder="Klistra in länken här" aria-label="Flyttlänk eller backup"></textarea>'+
+    '<button class="tr-btn primary" type="button" data-tr="flytta">Lägg in</button>'+
+    '<p class="tr-saved" id="tr-flytt-svar" style="color:var(--tr-bad)"></p></div></details>';
 }
 
 function kvarSet(pass){
@@ -359,6 +368,12 @@ function vidKlick(e){
   const a=b.dataset.tr,id=b.dataset.id,i=Number(b.dataset.i),k=b.dataset.k;
 
   if(a==='np'){startPass=b.dataset.v;rita();return;}
+  if(a==='flytta'){
+    const ta=rot.querySelector('#tr-flytt'),s=avkoda(ta&&ta.value);
+    if(!s){const e=rot.querySelector('#tr-flytt-svar');if(e)e.textContent='Det där gick inte att läsa. Kopiera hela länken och prova igen.';return;}
+    if(state&&state.history.length&&!confirm('Ersätta träningsdatan här med den från länken?'))return;
+    state=s;utkast={};spara();rita();window.scrollTo({top:Math.max(0,rot.getBoundingClientRect().top+window.scrollY-10)});return;
+  }
   if(a==='kopiera'){
     const txt=JSON.stringify(state||{}),ta=rot.querySelector('#tr-backup');
     const reserv=()=>{if(ta){ta.value=txt;ta.focus();ta.select();}kvittera('Markerad — kopiera manuellt');};
@@ -415,14 +430,21 @@ function vidSkicka(e){
 }
 
 // En länk som slutar på #trana=… lägger in träningsdata (används för att flytta data hit).
+// Läser en flyttlänk (…#trana=…), bara koden efter trana=, eller en backup-text.
+function avkoda(text){
+  text=String(text||'').trim();
+  const m=text.match(/trana=([A-Za-z0-9_\-]+=*)/);
+  try{
+    if(m){const bin=atob(m[1].replace(/-/g,'+').replace(/_/g,'/'));
+      return normalisera(JSON.parse(new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))));}
+    return normalisera(JSON.parse(text));
+  }catch(e){return null;}
+}
 // Returnerar true om sidan öppnades med en sådan länk.
 function importFranLank(){
-  const m=(location.hash||'').match(/trana=([A-Za-z0-9_\-]+=*)/);
-  if(!m)return false;
+  if(!/trana=/.test(location.hash||''))return false;
+  const s=avkoda(location.hash);
   history.replaceState(null,'',location.pathname+location.search);
-  let s=null;
-  try{const bin=atob(m[1].replace(/-/g,'+').replace(/_/g,'/'));
-    s=normalisera(JSON.parse(new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))));}catch(e){}
   if(!s){meddelande='Länken gick inte att läsa';return true;}
   if(state&&state.history.length&&!confirm('Ersätta träningsdatan på den här enheten med den från länken?'))return true;
   state=s;utkast={};spara();
