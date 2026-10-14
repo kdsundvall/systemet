@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Tio talgåtor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&display=swap">
+<style>
+/* Layout: en kolumn med uppgiftskort på rutat mattepapper, max ca 660px bred */
+:root{
+  --paper:#F4F7F9; --grid:rgba(31,98,135,.09); --card:#FFFFFF; --ink:#15212A; --muted:#55636E; --line:#D5DDE3;
+  --accent:#0C626D; --accent-ink:#FFFFFF; --accent-soft:#E1EFF0;
+  --mark:#F1DE6B; --mark-ink:#1E1B06; --mark-soft:#FBF5D2;
+  --ok:#1C7042; --ok-bg:#E2F2E8; --part:#7E5200; --part-bg:#FAEED1; --bad:#9E303B; --bad-bg:#FAE4E6; --note-bg:#EEF2F5;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11181D; --grid:rgba(140,190,220,.07); --card:#1A242B; --ink:#E7EDF1; --muted:#9BA9B3; --line:#2D3B44;
+    --accent:#56B9C3; --accent-ink:#082024; --accent-soft:#173438;
+    --mark:#E3D065; --mark-ink:#1E1B06; --mark-soft:#2E2B17;
+    --ok:#74D29C; --ok-bg:#16301F; --part:#EFC26A; --part-bg:#372B11; --bad:#F2969E; --bad-bg:#3A1D21; --note-bg:#202C34;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11181D; --grid:rgba(140,190,220,.07); --card:#1A242B; --ink:#E7EDF1; --muted:#9BA9B3; --line:#2D3B44;
+  --accent:#56B9C3; --accent-ink:#082024; --accent-soft:#173438;
+  --mark:#E3D065; --mark-ink:#1E1B06; --mark-soft:#2E2B17;
+  --ok:#74D29C; --ok-bg:#16301F; --part:#EFC26A; --part-bg:#372B11; --bad:#F2969E; --bad-bg:#3A1D21; --note-bg:#202C34;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  background-color:var(--paper); color:var(--ink);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  font-family:var(--body); font-size:17px; line-height:1.5;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:660px; margin:0 auto; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)); padding-block:28px 56px; display:flex; flex-direction:column; gap:18px}
+.m,input,.chip,.slot{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+
+.top{display:flex; flex-direction:column; gap:10px; padding-block:4px 6px}
+.eyebrow{font-family:var(--display); font-weight:700; color:var(--accent); letter-spacing:.06em; text-transform:uppercase; font-size:.8rem; margin:0}
+h1{font-family:var(--display); font-weight:800; font-size:clamp(2.1rem,8vw,2.9rem); line-height:1.02; margin:0; letter-spacing:-.01em; text-wrap:balance}
+.intro{margin:0; color:var(--muted); max-width:58ch}
+.progress{display:flex; flex-direction:column; gap:8px; margin-top:6px}
+.progress-text{font-family:var(--display); font-weight:700; font-size:1rem; margin:0}
+.segs{display:grid; grid-template-columns:repeat(10,1fr); gap:5px}
+.seg{display:flex; align-items:center; justify-content:center; height:30px; border-radius:7px; background:var(--card); border:1.5px solid var(--line); color:var(--muted); font-family:var(--display); font-weight:700; font-size:.85rem; text-decoration:none}
+.seg.right{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
+.seg.partial{border-color:var(--part); color:var(--part)}
+
+.card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:14px; scroll-margin-top:16px; box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.card.is-right{border-color:var(--ok)}
+.head{display:flex; align-items:flex-start; gap:12px}
+.num{flex:none; width:40px; height:40px; display:flex; align-items:center; justify-content:center; background:var(--mark); color:var(--mark-ink); font-family:var(--display); font-weight:800; font-size:1.25rem; border-radius:46% 54% 42% 58% / 55% 45% 55% 45%; transform:rotate(-4deg)}
+.head-text{flex:1; min-width:0}
+h2{font-family:var(--display); font-weight:700; font-size:1.25rem; line-height:1.2; margin:2px 0 2px; text-wrap:balance}
+.tags{margin:0; font-size:.82rem; color:var(--muted); letter-spacing:.01em}
+.lvl{font-weight:700; color:var(--accent)}
+.done{flex:none; font-family:var(--display); font-weight:700; font-size:.8rem; color:var(--ok); background:var(--ok-bg); border-radius:999px; padding:4px 10px; margin-top:6px}
+.q p{margin:0 0 .6em}
+.q p:last-child{margin-bottom:0}
+.ask{font-weight:700}
+.remember{background:var(--mark-soft); border-radius:10px; padding:10px 12px; font-size:.93rem}
+.remember b{font-family:var(--display); font-weight:700; margin-right:4px}
+.remember sup,.how-body sup{font-size:.7em}
+
+.ans{display:flex; flex-direction:column; gap:14px}
+.part-label{font-weight:700; margin:0}
+.fields{display:flex; flex-wrap:wrap; gap:12px}
+.field{display:flex; flex-direction:column; gap:5px; flex:1 1 140px; min-width:0}
+.flabel{font-size:.85rem; color:var(--muted); font-weight:700; margin:0}
+.inrow{display:flex; align-items:center; gap:8px}
+.unit{flex:none; font-weight:700; color:var(--muted)}
+input{width:100%; min-width:0; height:50px; font:inherit; font-size:1.15rem; color:var(--ink); background:var(--paper); border:1.5px solid var(--line); border-radius:11px; padding:0 14px}
+input:focus{border-color:var(--accent); outline:none; box-shadow:0 0 0 3px var(--accent-soft)}
+.neg{flex:none; width:48px; height:50px; border-radius:11px; border:1.5px solid var(--line); background:var(--card); color:var(--ink); font-family:var(--display); font-weight:800; font-size:1.05rem; cursor:pointer}
+.field.wide,.field.has-neg{flex-basis:100%}
+.field.has-neg input{max-width:12em}
+.gpf-row{display:flex; align-items:flex-start; gap:8px}
+.gpf-row .gm{width:6.5em; flex:none; margin-top:14px}
+.gpf-row .times{font-size:1.35rem; font-weight:700; margin-top:24px; white-space:nowrap}
+.gpf-row .ge{width:3.6em; flex:none; height:44px; text-align:center; padding:0 6px}
+
+.choices{display:flex; flex-direction:column; gap:8px}
+.choice{display:flex; align-items:center; gap:12px; width:100%; text-align:left; font:inherit; color:var(--ink); background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; cursor:pointer}
+.choice .letter{flex:none; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:800; background:var(--note-bg); color:var(--muted)}
+.choice.multi .letter{border-radius:8px}
+.choice[aria-checked="true"]{border-color:var(--accent); background:var(--accent-soft)}
+.choice[aria-checked="true"] .letter{background:var(--accent); color:var(--accent-ink)}
+
+.order{display:flex; flex-direction:column; gap:8px}
+.slots,.pool{display:flex; flex-wrap:wrap; gap:8px}
+.slot{position:relative; min-width:84px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:0 14px 0 22px}
+.slot.empty{border:1.5px dashed var(--line); background:transparent}
+.pos{position:absolute; left:7px; top:4px; font-size:.7rem; font-weight:700; color:var(--muted)}
+.chip{font-family:var(--display); font-weight:700; font-size:1.15rem; color:var(--ink); background:var(--card); border:1.5px solid var(--line); border-radius:12px; min-height:52px; padding:0 16px; cursor:pointer; white-space:nowrap}
+.slot.chip{background:var(--accent-soft); border-color:var(--accent)}
+.chip sup{font-size:.62em; line-height:0}
+.pool-empty{margin:0; font-size:.88rem; color:var(--muted)}
+.link-btn{align-self:flex-start; font:inherit; font-size:.95rem; color:var(--accent); background:none; border:0; padding:4px 0; text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+
+.actions{display:flex; gap:16px; flex-wrap:wrap; align-items:center}
+.btn{font-family:var(--display); font-weight:700; font-size:1.05rem; height:48px; padding:0 26px; border-radius:12px; border:1.5px solid var(--accent); cursor:pointer}
+.btn.primary{background:var(--accent); color:var(--accent-ink)}
+.btn.ghost{background:transparent; color:var(--accent)}
+.hintbox{background:var(--note-bg); border-radius:12px; padding:10px 14px; margin:0; font-size:.97rem}
+.hintbox b{font-family:var(--display)}
+.fb{border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:4px; background:var(--note-bg)}
+.fb p{margin:0}
+.fb-title{font-family:var(--display); font-weight:800; font-size:1.1rem}
+.fb.right{background:var(--ok-bg)} .fb.right .fb-title{color:var(--ok)}
+.fb.partial{background:var(--part-bg)} .fb.partial .fb-title{color:var(--part)}
+.fb.wrong{background:var(--bad-bg)} .fb.wrong .fb-title{color:var(--bad)}
+.fb-msg{white-space:pre-line}
+.how{border-top:1px solid var(--line); padding-top:12px}
+.how summary{font-family:var(--display); font-weight:700; color:var(--accent); cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px; min-height:32px}
+.how summary::-webkit-details-marker{display:none}
+.how summary::before{content:"+"; display:inline-flex; width:22px; height:22px; align-items:center; justify-content:center; border:1.5px solid var(--accent); border-radius:6px; font-size:1rem; line-height:1}
+.how[open] summary::before{content:"−"}
+.how-body{padding-top:8px}
+.how-body p,.how-body ol,.how-body ul{margin:0 0 .6em}
+.how-body ol{padding-left:1.3em}
+.how-body li{margin-bottom:.3em}
+.how-body ul.plain{list-style:none; padding:0}
+.how-body .tip{background:var(--note-bg); border-radius:10px; padding:10px 12px; font-size:.95rem}
+.tbl{overflow-x:auto; margin:0 0 .6em}
+.tbl table{border-collapse:collapse; font-variant-numeric:tabular-nums; font-size:.95rem}
+.tbl th,.tbl td{border-bottom:1px solid var(--line); padding:5px 10px; text-align:right; white-space:nowrap}
+.tbl th{font-size:.8rem; color:var(--muted)}
+.tbl tr.hit td{background:var(--ok-bg); font-weight:700}
+
+.finish{text-align:center; display:flex; flex-direction:column; gap:12px; align-items:center; padding-block:8px}
+.finish p{margin:0}
+.allDone{font-family:var(--display); font-weight:800; font-size:1.4rem; color:var(--ok)}
+.confirm{display:flex; flex-direction:column; gap:10px; align-items:center}
+@media (prefers-reduced-motion: no-preference){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">Problemlösning · Tal</p>
+    <h1>Tio talgåtor</h1>
+    <p class="intro">Uppgifterna börjar lätt och blir svårare. Skriv ditt svar och tryck på Rätta. Blir det fel får du en ledtråd och kan försöka igen. Fastnar du kan du trycka på Ledtråd direkt. Alla siffror i uppgifterna är påhittade.</p>
+    <div class="progress">
+      <p class="progress-text" id="progress-text">0 av 10 klara</p>
+      <nav class="segs" id="segs" aria-label="Uppgifter"></nav>
+    </div>
+  </header>
+
+  <main id="list" style="display:flex;flex-direction:column;gap:18px"></main>
+
+  <footer class="finish">
+    <p class="allDone" id="all-done" hidden>Alla tio klara. Snyggt jobbat!</p>
+    <button type="button" class="btn ghost" id="reset-btn">Börja om</button>
+    <div class="confirm" id="confirm" hidden>
+      <p>Alla svar raderas. Vill du börja om?</p>
+      <div class="actions"><button type="button" class="btn primary" id="reset-yes">Ja, börja om</button><button type="button" class="btn ghost" id="reset-no">Avbryt</button></div>
+    </div>
+  </footer>
+</div>
+
+<script>
+// LOGIC START
+const eq=(a,b)=>Math.abs(a-b)<=1e-9*Math.max(1,Math.abs(a),Math.abs(b));
+const isBlank=v=>v==null||String(v).trim()==='';
+function fmt(x){
+  if(!isFinite(x)) return String(x);
+  const neg=x<0; x=Math.abs(x);
+  let s=String(Math.round(x*1e6)/1e6);
+  if(s.includes('e')) s=x.toLocaleString('en-US',{useGrouping:false,maximumFractionDigits:6});
+  let [i,d]=s.split('.');
+  if(i.length>=4) i=i.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+  return (neg?'−':'')+i+(d?','+d:'');
+}
+function parseNum(raw){
+  if(raw==null) return NaN;
+  const s=String(raw).trim().replace(/[\s   ]/g,'').replace(/[−–]/g,'-').replace(',','.');
+  if(!/^-?(\d+(\.\d*)?|\.\d+)$/.test(s)) return NaN;
+  return parseFloat(s);
+}
+const andJoin=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' och '+a[a.length-1];
+const R=()=>({status:'right'});
+const P=m=>({status:'partial',msg:m});
+const W=m=>({status:'wrong',msg:m||''});
+const E=m=>({status:'empty',msg:m||'Skriv ett svar först.'});
+
+// En deluppgift med ett tal som svar
+function numPart(label,raw,correct,errs){
+  const pre=label?label+') ':'';
+  if(isBlank(raw)) return {ok:false,blank:true,msg:pre+'Inte ifylld än.'};
+  const x=parseNum(raw);
+  if(isNaN(x)) return {ok:false,msg:pre+'Skriv ett tal, till exempel 12 eller 4,5.'};
+  if(eq(x,correct)) return {ok:true,msg:label?pre+'Rätt!':''};
+  return {ok:false,msg:pre+((errs&&errs(x))||'Inte rätt än.')};
+}
+function gpfPart(label,mRaw,eRaw,value,mant){
+  const pre=label+') ';
+  if(isBlank(mRaw)&&isBlank(eRaw)) return {ok:false,blank:true,msg:pre+'Inte ifylld än.'};
+  if(isBlank(mRaw)||isBlank(eRaw)) return {ok:false,msg:pre+'Fyll i båda rutorna: talet framför och exponenten.'};
+  const m=parseNum(mRaw),e=parseNum(eRaw);
+  if(isNaN(m)||isNaN(e)) return {ok:false,msg:pre+'Skriv tal i båda rutorna.'};
+  if(!Number.isInteger(e)) return {ok:false,msg:pre+'Exponenten ska vara ett heltal.'};
+  if(eq(m*Math.pow(10,e),value)){
+    if(m>=1&&m<10) return {ok:true,msg:pre+'Rätt!'};
+    return {ok:false,msg:pre+'Värdet stämmer! Men i grundpotensform ska talet framför tiopotensen vara minst 1 och mindre än 10.'};
+  }
+  if(eq(m,mant)) return {ok:false,msg:pre+`${fmt(mant)} stämmer, men exponenten är fel. Räkna hur många steg decimaltecknet flyttas.`};
+  return {ok:false,msg:pre+'Inte rätt än.'};
+}
+function combine(parts){
+  if(parts.every(p=>p.blank)) return E();
+  const okN=parts.filter(p=>p.ok).length;
+  const msg=parts.map(p=>p.msg).filter(Boolean).join('\n');
+  if(okN===parts.length) return R();
+  return okN?P(msg):W(msg);
+}
+function checkList(vals,answers,why){
+  const raw=vals.map(x=>String(x??'').trim()).filter(Boolean);
+  if(!raw.length) return E();
+  const nums=[];
+  for(const r of raw){const n=parseNum(r);if(isNaN(n)||!Number.isInteger(n)) return E(`”${r}” är inte ett heltal. Skriv ett heltal i varje ruta.`);if(!nums.includes(n)) nums.push(n)}
+  const found=nums.filter(n=>answers.includes(n)),wrong=nums.filter(n=>!answers.includes(n));
+  const msgs=wrong.map(why);
+  if(!wrong.length&&found.length===answers.length) return R();
+  if(found.length===answers.length) return P([...msgs,'Ta bort det svaret. Resten stämmer, och du har hittat alla lösningar.'].join('\n'));
+  if(found.length) return P([`${andJoin(found.map(fmt))} stämmer!`,...msgs,'Det finns fler lösningar att hitta.'].join('\n'));
+  return W(msgs.join('\n'));
+}
+const roundK=n=>Math.floor((n+500)/1000)*1000;
+function townPart(label,raw,target,isMin){
+  const pre=label+') ';
+  if(isBlank(raw)) return {ok:false,blank:true,msg:pre+'Inte ifylld än.'};
+  const x=parseNum(raw);
+  if(isNaN(x)) return {ok:false,msg:pre+'Skriv ett tal.'};
+  if(!Number.isInteger(x)) return {ok:false,msg:pre+'Antalet invånare är ett heltal.'};
+  if(x===target) return {ok:true,msg:pre+'Rätt!'};
+  const r=roundK(x);
+  if(r!==49000) return {ok:false,msg:pre+`${fmt(x)} avrundas till ${fmt(r)}, inte 49 000.`};
+  return {ok:false,msg:pre+`${fmt(x)} avrundas till 49 000, men det finns ett ${isMin?'mindre':'större'} tal som också gör det.`};
+}
+
+const PROBLEMS=[
+{id:1,level:1,title:'Mobilsurfen',tags:'Prefix · Dividera med 1 000',
+ q:`<p>Amira har 15&nbsp;GB surf per månad. Hittills den här månaden har hon använt 9&nbsp;400&nbsp;MB.</p><p class="ask">a) Hur många MB har hon kvar?<br>b) Hur många GB är det?</p>`,
+ remember:'1 GB = 1&nbsp;000 MB. Från GB till MB multiplicerar du med 1&nbsp;000. Från MB till GB dividerar du med 1&nbsp;000.',
+ fields:[{key:'a',label:'a) Kvar',unit:'MB'},{key:'b',label:'b) Kvar',unit:'GB'}],
+ hint:'Gör om 15 GB till MB först, så att båda talen har samma enhet.',
+ check(v){return combine([
+  numPart('a',v.a,5600,x=>eq(x,9385)?'Du drog bort 15 från 9 400. Gör först om 15 GB till MB.':eq(x,5.6)?'Det är svaret i GB. Här ska svaret vara i MB.':''),
+  numPart('b',v.b,5.6,x=>eq(x,5600)?'Det är antalet MB. Dela med 1 000 för att få GB.':(eq(x,0.56)||eq(x,56)||eq(x,0.056))?'Kolla decimaltecknet. Att dela med 1 000 är att flytta decimaltecknet tre steg åt vänster.':'')
+ ])},
+ solution:`<ol><li>15&nbsp;GB = 15 · 1&nbsp;000&nbsp;MB = 15&nbsp;000&nbsp;MB</li><li>15&nbsp;000 − 9&nbsp;400 = 5&nbsp;600&nbsp;MB kvar</li><li>5&nbsp;600&nbsp;MB = 5&nbsp;600 / 1&nbsp;000&nbsp;GB = 5,6&nbsp;GB</li></ol><p class="tip">Dela med 1&nbsp;000: flytta decimaltecknet tre steg åt vänster. 5&nbsp;600,0 → 5,6</p>`},
+
+{id:2,level:1,title:'Kall dag i Kiruna',tags:'Negativa tal',
+ q:`<p>En morgon i Kiruna var det <span class="m">−14&nbsp;°C</span>. Till lunch blev det 9 grader varmare. Till kvällen blev det 6 grader kallare än vid lunch.</p><p class="ask">a) Vilken temperatur var det vid lunch?<br>b) Vilken temperatur var det på kvällen?</p>`,
+ remember:'Varmare = plus. Kallare = minus. Temperaturer under noll är negativa tal. Tryck på ± för att skriva minustecken.',
+ fields:[{key:'a',label:'a) Lunch',unit:'°C',neg:true},{key:'b',label:'b) Kväll',unit:'°C',neg:true}],
+ hint:'Tänk på en termometer. Varmare betyder uppåt (+). Kallare betyder nedåt (−).',
+ check(v){return combine([
+  numPart('a',v.a,-5,x=>eq(x,5)?'Rätt siffra, men från −14 går du bara 9 steg uppåt på termometern. Kommer du förbi 0?':(eq(x,-23)||eq(x,23))?'Varmare betyder att temperaturen går upp. Räkna −14 + 9.':''),
+  numPart('b',v.b,-11,x=>(eq(x,1)||eq(x,-1))?'Kallare betyder att temperaturen går ner. Räkna −5 − 6.':eq(x,-20)?'Utgå från temperaturen vid lunch, inte på morgonen.':eq(x,11)?'Rätt siffror, men kolla tecknet. Under noll skrivs med minus.':'')
+ ])},
+ solution:`<ol><li>Lunch: −14 + 9 = −5. Från −14 går du 9 steg uppåt. Du kommer inte ända upp till 0, så det blir −5&nbsp;°C.</li><li>Kväll: −5 − 6 = −11. Från −5 går du 6 steg nedåt, så det blir −11&nbsp;°C.</li></ol><p class="tip">Kontroll: −14 + 9 − 6 = −11 ✓</p>`},
+
+{id:3,level:1,title:'Sommarjobbet',tags:'Överslagsräkning',
+ q:`<p>Jonas har sommarjobb. En vecka jobbar han 38 timmar och får 118&nbsp;kr i timmen.</p><p class="ask">Gör ett överslag. Ungefär hur mycket tjänar han den veckan?</p>`,
+ remember:'Överslag: avrunda till tal som är lätta att räkna med i huvudet, till exempel 38 ≈ 40.',
+ options:[{label:'450 kr',why:'För lite. Redan 40 timmar · 100 kr blir 4 000 kr.'},{label:'4&nbsp;500 kr'},{label:'45&nbsp;000 kr',why:'För mycket. Överslag: 40 · 120 = 4 800 kr.'},{label:'450&nbsp;000 kr',why:'Alldeles för mycket. Överslag: 40 · 120 = 4 800 kr.'}],
+ correct:[1],
+ hint:'Avrunda 38 till 40 och 118 till 120. Räkna sedan 40 · 120.',
+ check(v){
+  if(v.choice==null) return E('Välj ett av svaren först.');
+  if(v.choice===1) return R();
+  return W(this.options[v.choice].why);
+ },
+ solution:`<ol><li>Avrunda: 38 ≈ 40 och 118 ≈ 120.</li><li>40 · 120: räkna 4 · 12 = 48 och lägg till två nollor. Det blir 4&nbsp;800.</li><li>Närmast 4&nbsp;800 är <b>4&nbsp;500&nbsp;kr</b>.</li></ol><p class="tip">Exakt: 38 · 118 = 4&nbsp;484&nbsp;kr. Överslaget hjälper dig se att svaret är ungefär 4 – 5 tusen, inte 45 tusen.</p>`},
+
+{id:4,level:1,title:'Torget',tags:'Kvadrat · Kvadratrot',
+ q:`<p>Ett torg har formen av en kvadrat. Arean är <span class="m">900&nbsp;m²</span>.</p><p class="ask">a) Hur lång är en sida av torget?<br>b) Kommunen bygger ett nytt kvadratiskt torg där sidan är dubbelt så lång. Hur stor blir arean?</p>`,
+ remember:'Arean av en kvadrat = sidan · sidan = sidan<sup>2</sup>. Kvadratroten går baklänges: √49 = 7, eftersom 7 · 7 = 49.',
+ fields:[{key:'a',label:'a) Sidan',unit:'m'},{key:'b',label:'b) Ny area',unit:'m²'}],
+ hint:'Vilket tal gånger sig självt blir 900? Testa med tal som slutar på 0.',
+ check(v){return combine([
+  numPart('a',v.a,30,x=>eq(x,450)?'Du delade med 2. Sidan gånger sidan ska bli 900.':eq(x,225)?'Du delade med 4. Här är 900 arean, så sidan gånger sidan ska bli 900.':eq(x,300)?'Testa: 300 · 300 = 90 000. För stort.':eq(x,3)?'Testa: 3 · 3 = 9. För litet.':''),
+  numPart('b',v.b,3600,x=>eq(x,1800)?'Arean blir mer än dubbelt så stor när sidan dubblas. Räkna ny sida · ny sida.':eq(x,60)?'Det är den nya sidan. Arean är sidan · sidan.':'')
+ ])},
+ solution:`<ol><li>a) √900 = 30, eftersom 30 · 30 = 900. Sidan är 30&nbsp;m.</li><li>b) Ny sida: 2 · 30 = 60&nbsp;m. Ny area: 60 · 60 = 3&nbsp;600&nbsp;m².</li></ol><p class="tip">När sidan blir dubbelt så lång blir arean fyra gånger så stor: 4 · 900 = 3&nbsp;600.</p>`},
+
+{id:5,level:2,title:'Klassen på bio',tags:'Prioriteringsregler',
+ q:`<p>Klassen ska på bio. En biljett kostar 120&nbsp;kr och popcorn kostar 45&nbsp;kr. 8 elever köper biljett och popcorn. 3 elever köper bara biljett.</p><p class="ask">a) Vilka uttryck räknar ut den totala kostnaden rätt? Flera kan vara rätt.<br>b) Vad blir den totala kostnaden?</p>`,
+ remember:'Prioriteringsregler: först parenteser, sedan · och /, sist + och −.',
+ options:[{label:'8 · 120 + 45 + 3 · 120',why:'A blir 1 365 kr. Där räknas popcorn bara en gång, eftersom · räknas före +.'},{label:'8 · (120 + 45) + 3 · 120'},{label:'(8 + 3) · 120 + 45',why:'C blir 1 365 kr. Där räknas popcorn också bara en gång.'},{label:'11 · 120 + 8 · 45'}],
+ multi:true,correct:[1,3],
+ fields:[{key:'b',label:'b) Total kostnad',unit:'kr'}],
+ hint:'Räkna ut vad varje uttryck blir. Utan parenteser räknas · före +.',
+ check(v){
+  const sel=v.choices||[];let a;
+  if(!sel.length) a={ok:false,blank:true,msg:'a) Inte ifylld än.'};
+  else{
+   const wrongSel=sel.filter(i=>!this.correct.includes(i)),missing=this.correct.filter(i=>!sel.includes(i));
+   if(!wrongSel.length&&!missing.length) a={ok:true,msg:'a) Rätt!'};
+   else{const m=wrongSel.map(i=>this.options[i].why);if(missing.length===2)m.push('Inget av de rätta uttrycken är valt än.');else if(missing.length)m.push('Det finns ett rätt uttryck till.');a={ok:false,msg:'a) '+m.join(' ')}}
+  }
+  return combine([a,numPart('b',v.b,1680,x=>eq(x,1365)?'Så blir det om bara en elev köper popcorn.':eq(x,1815)?'Så blir det om alla 11 köper popcorn, men bara 8 gör det.':eq(x,165)?'Det är vad en elev med popcorn betalar. Räkna med alla elever.':'')]);
+ },
+ solution:`<ol><li>8 elever betalar 120 + 45 = 165&nbsp;kr var: 8 · (120 + 45) = 8 · 165 = 1&nbsp;320&nbsp;kr.</li><li>3 elever betalar 120&nbsp;kr var: 3 · 120 = 360&nbsp;kr.</li><li>Totalt: 1&nbsp;320 + 360 = 1&nbsp;680&nbsp;kr.</li></ol>
+ <p><b>B</b> räknar precis så. <b>D</b> räknar på ett annat sätt: alla 11 köper biljett (11 · 120 = 1&nbsp;320) och 8 köper popcorn (8 · 45 = 360). Det blir också 1&nbsp;680&nbsp;kr.</p>
+ <p><b>A</b> och <b>C</b> räknar bara popcorn en gång. Utan parentes räknas · före +, så 45 multipliceras inte med 8.</p>`},
+
+{id:6,level:2,title:'Ungefär 49 000 invånare',tags:'Avrundning',
+ q:`<p>I en tidning står det att kommunen Åby har ungefär 49&nbsp;000 invånare. Siffran är avrundad till tusental.</p><p class="ask">a) Avrunda 48&nbsp;652 till tusental.<br>b) Vilket är det minsta antal invånare Åby kan ha?<br>c) Vilket är det största antalet?</p>`,
+ remember:'Avrunda till tusental: titta på hundratalssiffran. 0–4 avrundas nedåt. 5–9 avrundas uppåt.',
+ fields:[{key:'a',label:'a) Avrundat',mode:'numeric'},{key:'b',label:'b) Minsta',mode:'numeric'},{key:'c',label:'c) Största',mode:'numeric'}],
+ hint:'Testa några tal: vad avrundas 48 499 till? 48 500? 49 499? 49 500?',
+ check(v){return combine([
+  numPart('a',v.a,49000,x=>eq(x,48000)?'Hundratalssiffran i 48 652 är 6. Då avrundar man uppåt.':eq(x,48700)?'Det är avrundat till hundratal. Avrunda till tusental.':eq(x,50000)?'Det är avrundat till tiotusental. Avrunda till tusental.':''),
+  townPart('b',v.b,48500,true),townPart('c',v.c,49499,false)
+ ])},
+ solution:`<ol><li>a) Hundratalssiffran i 48&nbsp;652 är 6, så vi avrundar uppåt: 49&nbsp;000.</li><li>b) Det minsta tal som avrundas uppåt till 49&nbsp;000 har hundratalssiffran 5: 48&nbsp;500. (48&nbsp;499 avrundas nedåt till 48&nbsp;000.)</li><li>c) Det största tal som avrundas nedåt till 49&nbsp;000 är 49&nbsp;499. (49&nbsp;500 avrundas uppåt till 50&nbsp;000.)</li></ol><p class="tip">När en siffra är avrundad kan det riktiga värdet ligga en bit över eller under.</p>`},
+
+{id:7,level:2,title:'Fem städer',tags:'Tiopotenser · Storleksordna',
+ q:`<p>Fem städer har så här många invånare.</p><p class="ask">Ordna från minst till störst. Tryck på talen i rätt ordning.</p>`,
+ remember:'10<sup>4</sup> = 10 · 10 · 10 · 10 = 10&nbsp;000. Exponenten säger hur många nollor det blir efter ettan.',
+ items:[{label:'10<sup>5</sup>',aria:'10 upphöjt till 5',v:100000},{label:'300&nbsp;000',aria:'300 000',v:300000},{label:'2 · 10<sup>4</sup>',aria:'2 gånger 10 upphöjt till 4',v:20000},{label:'9&nbsp;000',aria:'9 000',v:9000},{label:'1,5 · 10<sup>5</sup>',aria:'1,5 gånger 10 upphöjt till 5',v:150000}],
+ hint:'Skriv om alla tal som vanliga tal först. Till exempel 10⁵ = 100 000.',
+ check(v){
+  const o=v.order||[];
+  if(o.length<this.items.length) return E('Placera alla fem talen först.');
+  const right=this.items.map((_,i)=>i).sort((a,b)=>this.items[a].v-this.items[b].v);
+  const k=o.filter((x,i)=>x===right[i]).length;
+  return k===5?R():W(`${k} av 5 står på rätt plats.`);
+ },
+ solution:`<p>Skriv om alla som vanliga tal:</p><ul class="plain"><li>10<sup>5</sup> = 100&nbsp;000 (en etta och fem nollor)</li><li>2 · 10<sup>4</sup> = 2 · 10&nbsp;000 = 20&nbsp;000</li><li>1,5 · 10<sup>5</sup> = 1,5 · 100&nbsp;000 = 150&nbsp;000</li></ul><p>Ordning: 9&nbsp;000 &lt; 2 · 10<sup>4</sup> &lt; 10<sup>5</sup> &lt; 1,5 · 10<sup>5</sup> &lt; 300&nbsp;000</p>`},
+
+{id:8,level:3,title:'Kommunens budget',tags:'Grundpotensform · Dividera',
+ q:`<p>Kommunen Norrvik har en budget på 2&nbsp;300&nbsp;000&nbsp;000&nbsp;kr för ett år. I kommunen bor 46&nbsp;000 personer.</p><p class="ask">a) Skriv budgeten i grundpotensform.<br>b) Hur många kronor blir det per invånare?</p>`,
+ remember:'Grundpotensform: ett tal från 1 till under 10, gånger en tiopotens. Exempel: 32&nbsp;000 = 3,2 · 10<sup>4</sup>.',
+ fields:[{key:'a',label:'a) Budget i kr',type:'gpf'},{key:'b',label:'b) Per invånare',unit:'kr'}],
+ hint:'a) Flytta decimaltecknet tills du får ett tal mellan 1 och 10, och räkna stegen. b) Ta bort lika många nollor från båda talen innan du delar.',
+ check(v){return combine([
+  gpfPart('a',v.a_m,v.a_e,2300000000,2.3),
+  numPart('b',v.b,50000,x=>[5,50,500,5000,500000,5000000].some(t=>eq(x,t))?'Siffran 5 stämmer, men antalet nollor är fel. Kontrollera: 46 000 · ditt svar ska bli 2 300 000 000.':'')
+ ])},
+ solution:`<ol><li>a) Flytta decimaltecknet så att det blir ett tal mellan 1 och 10: 2,3. Decimaltecknet flyttades 9 steg, så 2&nbsp;300&nbsp;000&nbsp;000 = 2,3 · 10<sup>9</sup>.</li><li>b) 2&nbsp;300&nbsp;000&nbsp;000 / 46&nbsp;000. Ta bort tre nollor i båda talen (det är samma sak som att dela båda med 1&nbsp;000): 2&nbsp;300&nbsp;000 / 46.</li><li>46 · 5 = 230, så 2&nbsp;300&nbsp;000 / 46 = 50&nbsp;000.</li></ol><p>Svar: 50&nbsp;000&nbsp;kr per invånare.</p><p class="tip">Kontroll: 50&nbsp;000 · 46&nbsp;000 = 2&nbsp;300&nbsp;000&nbsp;000 ✓</p>`},
+
+{id:9,level:3,title:'Frågesporten',tags:'Negativa tal · Problemlösning',
+ q:`<p>I en frågesport i samhällskunskap får man <span class="m">+2</span> poäng för rätt svar och <span class="m">−1</span> poäng för fel svar. Sara svarade på alla 10 frågor och fick 11 poäng.</p><p class="ask">a) Hur många rätt hade hon?<br>b) Hur många fel hade hon?</p>`,
+ remember:'Gör en tabell och testa dig fram. Det är ett helt okej sätt att lösa problem.',
+ fields:[{key:'a',label:'a) Antal rätt',mode:'numeric'},{key:'b',label:'b) Antal fel',mode:'numeric'}],
+ hint:'Testa: om hon har 6 rätt har hon 4 fel. Då blir poängen 6 · 2 − 4. Är det 11?',
+ check(v){return combine([
+  numPart('a',v.a,7,r=>(!Number.isInteger(r)||r<0||r>10)?'Antalet rätt måste vara ett heltal från 0 till 10.':`Med ${r} rätt och ${10-r} fel blir det ${2*r} − ${10-r} = ${fmt(3*r-10)} poäng, inte 11.`),
+  numPart('b',v.b,3,x=>'Rätt och fel ska tillsammans bli 10 frågor, och poängen ska bli 11.')
+ ])},
+ solution:`<p>Gör en tabell. Rätt ger 2 poäng var, och varje fel drar bort 1 poäng.</p>
+ <div class="tbl"><table><thead><tr><th>Rätt</th><th>Fel</th><th>Uträkning</th><th>Poäng</th></tr></thead><tbody>
+ <tr><td>0</td><td>10</td><td>0 − 10</td><td>−10</td></tr>
+ <tr><td>5</td><td>5</td><td>10 − 5</td><td>5</td></tr>
+ <tr><td>6</td><td>4</td><td>12 − 4</td><td>8</td></tr>
+ <tr class="hit"><td>7</td><td>3</td><td>14 − 3</td><td>11</td></tr>
+ <tr><td>8</td><td>2</td><td>16 − 2</td><td>14</td></tr></tbody></table></div>
+ <p>Svar: 7 rätt och 3 fel.</p><p class="tip">Mönster: varje gång ett fel byts mot ett rätt ökar poängen med 3. Från 5 poäng (5 rätt) behövs två byten till för att nå 11.</p>`},
+
+{id:10,level:3,title:'Grupperna',tags:'Delbarhet · Faktorisering',
+ q:`<p>84 elever ska delas in i lika stora grupper till ett samhällsprojekt. Ingen elev får bli över. Varje grupp ska ha minst 5 och högst 15 elever.</p><p class="ask">Hur många elever kan det vara i varje grupp? Finns det flera lösningar? Skriv alla du hittar.</p>`,
+ remember:'Ett tal är delbart med ett annat om divisionen går jämnt ut, utan rest. 84 / 4 = 21 går jämnt ut, så 84 är delbart med 4.',
+ fields:[{key:'f1',label:'Elever per grupp',mode:'numeric'},{key:'f2',label:'Fler?',mode:'numeric'},{key:'f3',label:'Fler?',mode:'numeric'},{key:'f4',label:'Fler?',mode:'numeric'}],
+ hint:'Testa att dela 84 med 5, 6, 7 och så vidare upp till 15. Vilka går jämnt ut?',
+ check(v){return checkList([v.f1,v.f2,v.f3,v.f4],[6,7,12,14],n=>{
+  if(n<5||n>15) return `${fmt(n)} elever per grupp går inte. Det ska vara minst 5 och högst 15.`;
+  const q=Math.floor(84/n),r=84%n;
+  return `84 / ${n} = ${q} med rest ${r}. Då blir ${r} ${r===1?'elev':'elever'} över.`;
+ })},
+ solution:`<ol><li>Faktorisera 84 med ett faktorträd: 84 = 2 · 42 = 2 · 2 · 21 = 2 · 2 · 3 · 7. Alla faktorerna är primtal.</li><li>Kombinera faktorerna till tal mellan 5 och 15: 2 · 3 = 6, 7, 2 · 2 · 3 = 12 och 2 · 7 = 14.</li><li>Kontrollera: 84 / 6 = 14 grupper, 84 / 7 = 12 grupper, 84 / 12 = 7 grupper, 84 / 14 = 6 grupper.</li></ol><p>Svar: 6, 7, 12 eller 14 elever per grupp. Det finns fyra lösningar.</p><p class="tip">5, 8, 9, 10, 11, 13 och 15 går inte jämnt upp i 84.</p>`}
+];
+// LOGIC END
+
+const KEY='talgator-v2';
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');return (s&&typeof s==='object')?s:{}}catch(e){return {}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load();
+const st=id=>S[id]||(S[id]={v:{},status:'',msg:'',tried:false,hint:false});
+const list=document.getElementById('list');
+const fid=(p,k)=>`u${p.id}-${k}`;
+const inAttrs='autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done"';
+
+function fieldHTML(p,f){
+  if(f.type==='gpf') return `<div class="field wide"><span class="flabel">${f.label}</span><div class="gpf-row"><input id="${fid(p,f.key+'_m')}" class="gm" data-key="${f.key}_m" inputmode="decimal" ${inAttrs} aria-label="${f.label}, talet framför tiopotensen"><span class="times">· 10</span><input id="${fid(p,f.key+'_e')}" class="ge" data-key="${f.key}_e" inputmode="numeric" ${inAttrs} aria-label="${f.label}, exponent"></div></div>`;
+  return `<div class="field${f.neg?' has-neg':''}"><label class="flabel" for="${fid(p,f.key)}">${f.label}</label><div class="inrow">${f.neg?`<button type="button" class="neg" data-neg="${f.key}" aria-label="Byt tecken, plus eller minus">±</button>`:''}<input id="${fid(p,f.key)}" data-key="${f.key}" inputmode="${f.mode||'decimal'}" ${inAttrs}>${f.unit?`<span class="unit">${f.unit}</span>`:''}</div></div>`;
+}
+function answerHTML(p){
+  let h='';
+  if(p.options) h+=`${p.fields?'<p class="part-label">a)</p>':''}<div class="choices" role="${p.multi?'group':'radiogroup'}" aria-label="Svarsalternativ">${p.options.map((o,i)=>`<button type="button" class="choice${p.multi?' multi':''}" role="${p.multi?'checkbox':'radio'}" aria-checked="false" data-choice="${i}"><span class="letter">${'ABCD'[i]}</span><span class="m">${o.label}</span></button>`).join('')}</div>`;
+  if(p.items) h+=`<div class="order"><p class="flabel">Din ordning, minst först</p><div class="slots" data-role="slots"></div><p class="flabel">Tryck på talen</p><div class="pool" data-role="pool"></div><button type="button" class="link-btn" data-act="clear-order">Rensa ordningen</button></div>`;
+  if(p.fields) h+=`<div class="fields">${p.fields.map(f=>fieldHTML(p,f)).join('')}</div>`;
+  return h;
+}
+
+function buildCard(p){
+  const art=document.createElement('article');
+  art.className='card';art.id='u'+p.id;
+  art.innerHTML=`<header class="head"><span class="num" aria-hidden="true">${p.id}</span><div class="head-text"><h2><span class="sr">Uppgift ${p.id}: </span>${p.title}</h2><p class="tags"><span class="lvl">Nivå ${p.level}</span> · ${p.tags}</p></div><span class="done" hidden>Klar</span></header>
+  <div class="q">${p.q}</div>
+  <p class="remember"><b>Kom ihåg</b>${p.remember}</p>
+  <div class="ans">${answerHTML(p)}</div>
+  <div class="actions"><button type="button" class="btn primary" data-act="check">Rätta</button><button type="button" class="link-btn" data-act="hint">Ledtråd</button></div>
+  <p class="hintbox" hidden><b>Ledtråd: </b><span class="hint-t"></span></p>
+  <div class="fb" aria-live="polite" hidden><p class="fb-title"></p><p class="fb-msg"></p></div>
+  <details class="how" hidden><summary>Så kan du tänka</summary><div class="how-body">${p.solution}</div></details>`;
+  art.querySelector('.hint-t').textContent=p.hint;
+  const s=st(p.id);
+  art.querySelectorAll('input[data-key]').forEach(inp=>{
+    inp.value=s.v[inp.dataset.key]??'';
+    inp.addEventListener('input',()=>{s.v[inp.dataset.key]=inp.value;edited(art,p)});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();doCheck(art,p)}});
+  });
+  art.addEventListener('click',e=>{
+    const t=e.target.closest('button');if(!t||!art.contains(t)) return;
+    const d=t.dataset;
+    if(d.act==='check') return doCheck(art,p);
+    if(d.act==='hint'){s.hint=!s.hint;save();return paint(art,p)}
+    if(d.choice!=null){const i=+d.choice;if(p.multi){const c=s.v.choices=s.v.choices||[];const k=c.indexOf(i);k<0?c.push(i):c.splice(k,1)}else s.v.choice=i;return edited(art,p)}
+    if(d.pick!=null){(s.v.order=s.v.order||[]).push(+d.pick);return edited(art,p)}
+    if(d.slot!=null){s.v.order.splice(+d.slot,1);return edited(art,p)}
+    if(d.act==='clear-order'){s.v.order=[];return edited(art,p)}
+    if(d.neg){const cur=String(s.v[d.neg]||'').trim();const nv=/^[-−–]/.test(cur)?cur.replace(/^[-−–]\s*/,''):'−'+cur;s.v[d.neg]=nv;const inp=art.querySelector(`input[data-key="${d.neg}"]`);inp.value=nv;return edited(art,p)}
+  });
+  paint(art,p);
+  return art;
+}
+function edited(art,p){const s=st(p.id);s.status='';s.msg='';save();paint(art,p);updateProgress()}
+function doCheck(art,p){
+  const s=st(p.id),res=p.check.call(p,s.v),wasRight=s.status==='right';
+  s.status=res.status;s.msg=res.msg||'';
+  if(res.status!=='empty') s.tried=true;
+  save();paint(art,p);updateProgress();
+  if(res.status==='right'&&!wasRight) art.querySelector('.how').open=true;
+}
+function paint(art,p){
+  const s=st(p.id);
+  if(p.options) art.querySelectorAll('.choice').forEach(b=>{const i=+b.dataset.choice;b.setAttribute('aria-checked',String(p.multi?(s.v.choices||[]).includes(i):s.v.choice===i))});
+  if(p.items){
+    const ord=s.v.order||[];
+    art.querySelector('[data-role=slots]').innerHTML=p.items.map((_,k)=>{const i=ord[k];return i==null?`<span class="slot empty"><span class="pos">${k+1}</span></span>`:`<button type="button" class="slot chip" data-slot="${k}" aria-label="Plats ${k+1}: ${p.items[i].aria}. Tryck för att ta bort."><span class="pos">${k+1}</span>${p.items[i].label}</button>`}).join('');
+    const left=p.items.map((_,i)=>i).filter(i=>!ord.includes(i));
+    art.querySelector('[data-role=pool]').innerHTML=left.length?left.map(i=>`<button type="button" class="chip" data-pick="${i}" aria-label="${p.items[i].aria}">${p.items[i].label}</button>`).join(''):`<p class="pool-empty">Alla tal är placerade. Tryck på ett tal ovan om du vill flytta det.</p>`;
+  }
+  const fb=art.querySelector('.fb');
+  if(!s.status) fb.hidden=true;
+  else{
+    fb.hidden=false;fb.className='fb '+s.status;
+    const titles={right:'Rätt!',partial:'Nästan!',wrong:'Inte riktigt än',empty:''};
+    const ti=fb.querySelector('.fb-title');ti.textContent=titles[s.status];ti.hidden=!titles[s.status];
+    const mm=fb.querySelector('.fb-msg');mm.textContent=s.msg;mm.hidden=!s.msg;
+  }
+  const showHint=s.hint||s.status==='wrong';
+  art.querySelector('.hintbox').hidden=!showHint||s.status==='right';
+  art.querySelector('[data-act=hint]').textContent=s.hint?'Dölj ledtråd':'Ledtråd';
+  art.querySelector('.how').hidden=!s.tried;
+  art.querySelector('.done').hidden=s.status!=='right';
+  art.classList.toggle('is-right',s.status==='right');
+}
+function updateProgress(){
+  const n=PROBLEMS.filter(p=>st(p.id).status==='right').length;
+  document.getElementById('progress-text').textContent=`${n} av 10 klara`;
+  document.getElementById('segs').innerHTML=PROBLEMS.map(p=>{const s=st(p.id).status;return `<a class="seg ${s==='right'?'right':s==='partial'?'partial':''}" href="#u${p.id}" aria-label="Uppgift ${p.id}${s==='right'?', klar':''}">${p.id}</a>`}).join('');
+  document.getElementById('all-done').hidden=n<10;
+}
+function renderAll(){list.innerHTML='';PROBLEMS.forEach(p=>list.appendChild(buildCard(p)));updateProgress()}
+const resetBtn=document.getElementById('reset-btn'),confirmBox=document.getElementById('confirm');
+resetBtn.addEventListener('click',()=>{confirmBox.hidden=false;resetBtn.hidden=true});
+document.getElementById('reset-no').addEventListener('click',()=>{confirmBox.hidden=true;resetBtn.hidden=false});
+document.getElementById('reset-yes').addEventListener('click',()=>{S={};save();confirmBox.hidden=true;resetBtn.hidden=false;renderAll();window.scrollTo(0,0)});
+renderAll();
+</script>
+</body>
+</html>
